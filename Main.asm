@@ -624,7 +624,992 @@ StartPointer:
 return:
 .end_macro
 
+#Paint a white three with a black background
+.macro paintThree (%pointer, %flag) #$1 Pointer to the start of the number box; $2: '0' returns origal pointer, else returns the finish pointer;
+	pushWord $t2
+	pushWord $t3
+	pushWord %pointer
+	ori $t2 $0 0x000000 #Black Collor
+	ori $t3 $0 0xFFFFFF #White Collor
 
+	#Line 1 & Line 2
+	paintPixelLine $t2 %pointer 16 0
+	nextPixelLine %pointer 1
+	paintPixelLine $t2 %pointer 16 0
+	nextPixelLine %pointer 1
+
+	#Line 3
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 5 1
+	paintPixelLine $t3 %pointer 6 1
+	paintPixelLine $t2 %pointer 5 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 4
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 4 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 6 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 4 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 5 & Line 6
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 3 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 8 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 3 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 3 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 8 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 3 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 7
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 12 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 3 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 8
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 7 1
+	paintPixelLine $t3 %pointer 5 1
+	paintPixelLine $t2 %pointer 4 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 9 & Line 10
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 12 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 3 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 12 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 3 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 11 & Line 12
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 3 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 8 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 3 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 3 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 8 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 3 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 13
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 4 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 6 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 4 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 14
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 5 1
+	paintPixelLine $t3 %pointer 6 1
+	paintPixelLine $t2 %pointer 5 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+
+	#Line 15 & Line 16
+	paintPixelLine $t2 %pointer 16 0
+	nextPixelLine %pointer 1
+	paintPixelLine $t2 %pointer 16 0
+	nextPixelLine %pointer 1
+
+	#Pointer flag control
+	beq $zero %flag StartPointer
+	nop
+	popWord $t3 #Descarda a posição antiga do ponteiro
+	popWord $t3
+	popWord $t2
+	j return
+	nop
+StartPointer:
+	popWord %pointer #Poniter returns at start position
+	popWord $t3
+	popWord $t2
+return:
+.end_macro
+
+#Paint a white four with a black background
+.macro paintFour (%pointer, %flag) #$1 Pointer to the start of the number box; $2: '0' returns origal pointer, else returns the finish pointer;
+	pushWord $t2
+	pushWord $t3
+	pushWord %pointer
+	ori $t2 $0 0x000000 #Black Collor
+	ori $t3 $0 0xFFFFFF #White Collor
+
+	#Line 1 & Line 2
+	paintPixelLine $t2 %pointer 16 0
+	nextPixelLine %pointer 1
+	paintPixelLine $t2 %pointer 16 0
+	nextPixelLine %pointer 1
+	
+	#Line 3
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 9 1
+	paintPixelLine $t3 %pointer 2 1
+	paintPixelLine $t2 %pointer 5 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 4
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 8 1
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 5 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 5
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 7 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 2 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 5 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 6 & Line 7
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 6 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 3 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 5 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 6 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 3 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 5 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 8
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 5 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 4 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 5 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 9
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 4 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 5 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 5 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 10 & Line 11
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 3 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 6 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 5 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 3 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 6 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 5 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 12
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 3 1
+	paintPixelLine $t3 %pointer 10 1
+	paintPixelLine $t2 %pointer 3 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 13 & Line 14
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 10 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 5 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 10 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 5 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 15 & Line 16
+	paintPixelLine $t2 %pointer 16 0
+	nextPixelLine %pointer 1
+	paintPixelLine $t2 %pointer 16 0
+	nextPixelLine %pointer 1
+	
+	#Pointer flag control
+	beq $zero %flag StartPointer
+	nop
+	popWord $t3 #Descarda a posição antiga do ponteiro
+	popWord $t3
+	popWord $t2
+	j return
+	nop
+StartPointer:
+	popWord %pointer #Poniter returns at start position
+	popWord $t3
+	popWord $t2
+return:
+.end_macro
+
+#Paint a white five with a black background
+.macro paintFive (%pointer, %flag) #$1 Pointer to the start of the number box; $2: '0' returns origal pointer, else returns the finish pointer;
+	pushWord $t2
+	pushWord $t3
+	pushWord %pointer
+	ori $t2 $0 0x000000 #Black Collor
+	ori $t3 $0 0xFFFFFF #White Collor
+
+	#Line 1 & Line 2
+	paintPixelLine $t2 %pointer 16 0
+	nextPixelLine %pointer 1
+	paintPixelLine $t2 %pointer 16 0
+	nextPixelLine %pointer 1
+	
+	#Line 3
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 4 1
+	paintPixelLine $t3 %pointer 9 1
+	paintPixelLine $t2 %pointer 3 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 4 & Line 5 % Line 6
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 3 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 12 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 3 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 12 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 3 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 12 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 7
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 3 1
+	paintPixelLine $t3 %pointer 6 1
+	paintPixelLine $t2 %pointer 7 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 8
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 9 1
+	paintPixel $t3 %pointer
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 7 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 9
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 11 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 4 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 10 & Line 11
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 12 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 3 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 12 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 3 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 12
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 11 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 4 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 13
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 9 1
+	paintPixel $t3 %pointer
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 7 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 14
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 3 1
+	paintPixelLine $t3 %pointer 6 1
+	paintPixelLine $t2 %pointer 7 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+
+	#Line 15 & Line 16
+	paintPixelLine $t2 %pointer 16 0
+	nextPixelLine %pointer 1
+	paintPixelLine $t2 %pointer 16 0
+	nextPixelLine %pointer 1
+	
+	#Pointer flag control
+	beq $zero %flag StartPointer
+	nop
+	popWord $t3 #Descarda a posição antiga do ponteiro
+	popWord $t3
+	popWord $t2
+	j return
+	nop
+StartPointer:
+	popWord %pointer #Poniter returns at start position
+	popWord $t3
+	popWord $t2
+return:
+.end_macro
+
+#Paint a white six with a black background
+.macro paintSix (%pointer, %flag) #$1 Pointer to the start of the number box; $2: '0' returns origal pointer, else returns the finish pointer;
+	pushWord $t2
+	pushWord $t3
+	pushWord %pointer
+	ori $t2 $0 0x000000 #Black Collor
+	ori $t3 $0 0xFFFFFF #White Collor
+
+	#Line 1 & Line 2
+	paintPixelLine $t2 %pointer 16 0
+	nextPixelLine %pointer 1
+	paintPixelLine $t2 %pointer 16 0
+	nextPixelLine %pointer 1
+	
+	#Line 3
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 7 1
+	paintPixelLine $t3 %pointer 4 1
+	paintPixelLine $t2 %pointer 5 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 4
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 5 1
+	paintPixel $t3 %pointer
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 9 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 5 & Line 6
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 4 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 11 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 4 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 11 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 7
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 3 1
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t2 %pointer
+	paintPixelLine $t3 %pointer 4 1
+	paintPixelLine $t2 %pointer 6 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 8
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 3 1
+	paintPixelLine $t3 %pointer 3 1
+	paintPixelLine $t2 %pointer 4 1
+	paintPixel $t3 %pointer
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 4 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 9 & Line 10 & Line 11 & Line 12
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 3 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 8 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 3 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 3 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 8 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 3 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 3 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 8 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 3 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 3 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 8 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 3 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 13
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 4 1
+	paintPixel $t3 %pointer
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 4 1
+	paintPixel $t3 %pointer
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 4 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 14
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 6 1
+	paintPixelLine $t3 %pointer 4 1
+	paintPixelLine $t2 %pointer 6 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 15 & Line 16
+	paintPixelLine $t2 %pointer 16 0
+	nextPixelLine %pointer 1
+	paintPixelLine $t2 %pointer 16 0
+	nextPixelLine %pointer 1
+	
+	#Pointer flag control
+	beq $zero %flag StartPointer
+	nop
+	popWord $t3 #Descarda a posição antiga do ponteiro
+	popWord $t3
+	popWord $t2
+	j return
+	nop
+StartPointer:
+	popWord %pointer #Poniter returns at start position
+	popWord $t3
+	popWord $t2
+return:
+.end_macro
+
+#Paint a white seven with a black background
+.macro paintSeven (%pointer, %flag) #$1 Pointer to the start of the number box; $2: '0' returns origal pointer, else returns the finish pointer;
+	pushWord $t2
+	pushWord $t3
+	pushWord %pointer
+	ori $t2 $0 0x000000 #Black Collor
+	ori $t3 $0 0xFFFFFF #White Collor
+
+	#Line 1 & Line 2
+	paintPixelLine $t2 %pointer 16 0
+	nextPixelLine %pointer 1
+	paintPixelLine $t2 %pointer 16 0
+	nextPixelLine %pointer 1
+	
+	#Line 3
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 3 1
+	paintPixelLine $t3 %pointer 10 1
+	paintPixelLine $t2 %pointer 3 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 4
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 11 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 4 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 5
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 10 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 5 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 6
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 9 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 6 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 7 & Line 8
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 8 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 7 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 8 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 7 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 9
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 7 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 8 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 10 & Line 11
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 6 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 9 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 6 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 9 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 12
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 5 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 10 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 13
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 4 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 11 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 14
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 3 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 12 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 15 & Line 16
+	paintPixelLine $t2 %pointer 16 0
+	nextPixelLine %pointer 1
+	paintPixelLine $t2 %pointer 16 0
+	nextPixelLine %pointer 1
+	
+	#Pointer flag control
+	beq $zero %flag StartPointer
+	nop
+	popWord $t3 #Descarda a posição antiga do ponteiro
+	popWord $t3
+	popWord $t2
+	j return
+	nop
+StartPointer:
+	popWord %pointer #Poniter returns at start position
+	popWord $t3
+	popWord $t2
+return:
+.end_macro
+
+#Paint a white eight with a black background
+.macro paintEight (%pointer, %flag) #$1 Pointer to the start of the number box; $2: '0' returns origal pointer, else returns the finish pointer;
+	pushWord $t2
+	pushWord $t3
+	pushWord %pointer
+	ori $t2 $0 0x000000 #Black Collor
+	ori $t3 $0 0xFFFFFF #White Collor
+
+	#Line 1 & Line 2
+	paintPixelLine $t2 %pointer 16 0
+	nextPixelLine %pointer 1
+	paintPixelLine $t2 %pointer 16 0
+	nextPixelLine %pointer 1
+
+	#Line 3
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 6 1
+	paintPixelLine $t3 %pointer 4 1
+	paintPixelLine $t2 %pointer 6 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 4
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 4 1
+	paintPixel $t3 %pointer
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 4 1
+	paintPixel $t3 %pointer
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 4 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 5 & Line 6 & Line 7
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 3 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 8 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 3 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 3 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 8 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 3 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 3 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 8 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 3 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 8
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 4 1
+	paintPixelLine $t3 %pointer 8 1
+	paintPixelLine $t2 %pointer 4 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 9 & Line 10 & Line 11 & Line 12
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 3 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 8 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 3 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 3 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 8 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 3 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 3 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 8 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 3 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 3 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 8 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 3 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	
+	#Line 13
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 4 1
+	paintPixel $t3 %pointer
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 4 1
+	paintPixel $t3 %pointer
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 4 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 14
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 6 1
+	paintPixelLine $t3 %pointer 4 1
+	paintPixelLine $t2 %pointer 6 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 15 & Line 16
+	paintPixelLine $t2 %pointer 16 0
+	nextPixelLine %pointer 1
+	paintPixelLine $t2 %pointer 16 0
+	nextPixelLine %pointer 1
+	
+	#Pointer flag control
+	beq $zero %flag StartPointer
+	nop
+	popWord $t3 #Descarda a posição antiga do ponteiro
+	popWord $t3
+	popWord $t2
+	j return
+	nop
+StartPointer:
+	popWord %pointer #Poniter returns at start position
+	popWord $t3
+	popWord $t2
+return:
+.end_macro
+	
+#Paint a white nine with a black background
+.macro paintNine (%pointer, %flag) #$1 Pointer to the start of the number box; $2: '0' returns origal pointer, else returns the finish pointer;
+	pushWord $t2
+	pushWord $t3
+	pushWord %pointer
+	ori $t2 $0 0x000000 #Black Collor
+	ori $t3 $0 0xFFFFFF #White Collor
+
+	#Line 1 & Line 2
+	paintPixelLine $t2 %pointer 16 0
+	nextPixelLine %pointer 1
+	paintPixelLine $t2 %pointer 16 0
+	nextPixelLine %pointer 1
+	
+	#Line 3
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 6 1
+	paintPixelLine $t3 %pointer 4 1
+	paintPixelLine $t2 %pointer 6 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 4
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 4 1
+	paintPixel $t3 %pointer
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 4 1
+	paintPixel $t3 %pointer
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 4 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 5 & Line 6 & Line 7 & Line 8
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 3 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 8 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 3 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 3 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 8 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 3 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 3 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 8 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 3 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 3 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 8 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 3 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 9
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 4 1
+	paintPixel $t3 %pointer
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 4 1
+	paintPixel $t3 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 3 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 10
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 6 1
+	paintPixelLine $t3 %pointer 4 1
+	paintPixel $t2 %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 3 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 11 & Line 12
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 12 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 3 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 12 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 3 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 13
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 3 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 7 1
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 4 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 14
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 4 1
+	paintPixelLine $t3 %pointer 7 1
+	paintPixelLine $t2 %pointer 5 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	
+	#Line 15 & Line 16
+	paintPixelLine $t2 %pointer 16 0
+	nextPixelLine %pointer 1
+	paintPixelLine $t2 %pointer 16 0
+	nextPixelLine %pointer 1
+	
+	#Pointer flag control
+	beq $zero %flag StartPointer
+	nop
+	popWord $t3 #Descarda a posição antiga do ponteiro
+	popWord $t3
+	popWord $t2
+	j return
+	nop
+StartPointer:
+	popWord %pointer #Poniter returns at start position
+	popWord $t3
+	popWord $t2
+return:
+.end_macro
 
 ####################
 # Macros of Macros #
@@ -685,3 +1670,17 @@ printBaseInterface:
 	paintOne $s1 0
 	nextSquareHorizontal $s1 1
 	paintTwo $s1 0
+	nextSquareHorizontal $s1 1
+	paintThree $s1 0
+	nextSquareHorizontal $s1 1
+	paintFour $s1 0
+	nextSquareHorizontal $s1 1
+	paintFive $s1 0
+	nextSquareHorizontal $s1 1
+	paintSix $s1 0
+	nextSquareHorizontal $s1 1
+	paintSeven $s1 0
+	nextSquareHorizontal $s1 1
+	paintEight $s1 0
+	nextSquareHorizontal $s1 1
+	paintNine $s1 0
