@@ -55,7 +55,13 @@ loop:
 # Macros para pintar pixels #
 #############################
 
-#Pine a line of 'n' pixels
+#Paint a single pixel
+.macro paintPixel (%color, %pointer)
+	sw %color (%pointer)
+	addi %pointer %pointer 4
+.end_macro
+
+#Pinte a line of 'n' pixels
 .macro paintPixelLine (%cor, %ponteiro, %range, %flag) #$1: Color to paint; $2: Poniter to line start; $3: Size of the line; $4: '0' returns origal pointer, else returns the finish pointer;
 	pushWord $t0
 	pushWord %ponteiro
@@ -162,7 +168,7 @@ return:
 
 #This is some magic that's necessary so things wouldn't fall apart
 .macro magicMoveEndLine (%pointer)
-	addi %pointer %pointer 30720 #Magic numbers muah ha ha (16*32*15*4)	
+	addi %pointer %pointer 30720 #Magic numbers muah ha ha (16*32*15*4)
 .end_macro
 
 #Paint a column of 'n' squares
@@ -230,13 +236,13 @@ printBaseInterface:
 	#la $s1 0x10000000 #Pointer to the start of the display
 	and $s1 $gp $gp
 	paintFullLine $s0 $s1 1
-	
+
 	printCleanLine $s0 $s1 2
-	
+
 	printNextBlockLine $s0 $s1 6
-	
+
 	printCleanLine $s0 $s1 22
 	paintFullLine $s0 $s1 1
-	
+
 	and $s1 $gp $gp
 	paintZero $s1 0
