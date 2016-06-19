@@ -1,7 +1,6 @@
-
-######################
-# Macros para a Pilha#
-######################
+#######################
+# Macros para a Pilha #
+#######################
 
 .macro pushWord (%dado)
 	addi $sp $sp -4
@@ -12,9 +11,9 @@
 	addi $sp $sp 4
 .end_macro
 
-############################
-#Macros para mover ponteiro#
-############################
+##############################
+# Macros para mover ponteiro #
+##############################
 
 #Moves the pointer to the next 'n' square horizontalçy
 .macro nextSquareHorizontal (%ponteiro, %range) #$1: Memori Poniter; $2: Quantity of Squares to jump
@@ -25,6 +24,7 @@ loop:
 	addi $t0 $t0 1
 	blt $t0 %range loop
 	nop
+	popWord $t0
 .end_macro
 
 #Moves the pointer to the next 'n' square vertically
@@ -36,11 +36,39 @@ loop:
 	addi $t0 $t0 1
 	blt $t0 %range loop
 	nop
+	popWord $t0
 .end_macro
 
-################################
-# Macros para a printar na tela#
-################################
+#############################
+# Macros para pintar pixels #
+#############################
+
+#Pine a line of 'n' pixels
+.macro paintPixelLine (%cor, %ponteiro, %range, %flag) #$1: Color to paint; $2: Poniter to line start; $3: Size of the line; $4: '0' returns origal pointer, else returns the finish pointer;
+	pushWord $t0
+	pushWord %ponteiro
+	and $t0 $zero $zero
+loopLinha:
+	sw %cor (%ponteiro)
+	addi %ponteiro %ponteiro 4 #Next Pixel
+	addi $t0 $t0 1
+	blt $t0 %range loopLinha
+	nop
+	beq $zero %flag StartPointer
+	nop
+	popWord $t0 #Descarda a posição antiga do ponteiro
+	popWord $t0
+	j return
+	nop
+StartPointer:
+	popWord %ponteiro #Poniter returns at start position
+	popWord $t0
+return:
+.end_macro
+
+###################################
+# Macros para a printar Quadrados #
+###################################
 
 #Paint with ($2) color the square that starts and pointer($2)
 .macro paintSquare (%cor, %ponteiro, %flag) #$1: Color to paint; $2: square pointer; $3: '0' returns origal pointer, else returns the finish pointer;
@@ -120,6 +148,11 @@ StartPointer:
 return:
 .end_macro
 
+#This is some magic that's necessary so things wouldn't fall apart
+.macro magicMoveEndLine (%pointer)
+	addi %pointer %pointer 30720 #Magic numbers muah ha ha (16*32*15*4)	
+.end_macro
+
 #Paint a column of 'n' squares
 .macro paintColumn (%cor, %ponteiro, %range, %flag)#$1 Color to paint; $2: square pointer; $3 Number of squares to paint; $4: '0' returns origal pointer, else returns the finish pointer;
 	pushWord $t0
@@ -141,21 +174,53 @@ StartPointer:
 return:
 .end_macro
 
+####################
+# Macros of Macros #
+####################
+#Prints part of the interface
+.macro	printCleanLine (%cor %pointer %range)
+	pushWord $t0
+	and $t0 $zero $zero
+loopCleanLine:
+	paintSquare %cor %pointer 0
+	nextSquareHorizontal %pointer 19 #18(camp) + 1(inicial column)
+	paintLine %cor %pointer 13 1
+	magicMoveEndLine %pointer
+	addi $t0 $t0 1
+	blt $t0 %range loopCleanLine
+	nop
+	popWord $t0
+.end_macro
+#Prints part of the interface(the line with the next space)
+.macro printNextBlockLine (%cor %pointer %range)
+	pushWord $t0
+	and $t0 $zero $zero
+loopNextBlock:
+	paintSquare %cor %pointer 0
+	nextSquareHorizontal %pointer 19 #18(camp) + 1(inicial column)
+	paintLine %cor %pointer 4 1
+	nextSquareHorizontal %pointer 6 #6(next camp)
+	paintLine %cor %pointer 3 1
+	magicMoveEndLine %pointer
+	addi $t0 $t0 1
+	blt $t0 %range loopNextBlock
+	nop
+	popWord $t0
+.end_macro
+
+#############
+# MAIN CODE #
+#############
 .text
 printBaseInterface:
-	la $s0 0x797979
+	la $s0 0x797979 #Gray Border Color
+	#la $s1 0x10000000 #Pointer to the start of the display
 	and $s1 $gp $gp
-	#generateBorder($t3, 0, 5632, $t0, $t1)
-	paintFullLine $s0 $s1 0
-	la $s0 0x71e392
-	nextSquareVertical $s1 1
-	paintLine $s0 $s1 16 0
-	nextSquareHorizontal $s1 16
-	la $s0 0x6110a2
-	paintLine $s0 $s1 16 0
-	#paintColumn $s0 $s1 32 0
-	#paintSquare $s0 $s1 0
-	#nextSquareHorizontal $s1
-	#paintSquare $s0 $s1 0
-	#nextSquareVertical $s1
-	#paintSquare $s0 $s1 0
+	paintFullLine $s0 $s1 1
+	
+	printCleanLine $s0 $s1 2
+	
+	printNextBlockLine $s0 $s1 6
+	
+	printCleanLine $s0 $s1 22
+	paintFullLine $s0 $s1 1
