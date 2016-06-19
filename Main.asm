@@ -1628,6 +1628,7 @@ loopCleanLine:
 	nop
 	popWord $t0
 .end_macro
+
 #Prints part of the interface(the line with the next space)
 .macro printNextBlockLine (%cor %pointer %range)
 	pushWord $t0
@@ -1645,6 +1646,31 @@ loopNextBlock:
 	popWord $t0
 .end_macro
 
+#Reset to all 0's in the small box
+.macro resetSmallBox (%pointer) #$1: Pointer to the start of the small box;
+	pushWord %pointer
+	paintZero %pointer 0
+	nextSquareHorizontal %pointer 1
+	paintZero %pointer 0
+	nextSquareHorizontal %pointer 1
+	paintZero %pointer 0
+	nextSquareHorizontal %pointer 1
+	paintZero %pointer 0
+	nextSquareHorizontal %pointer 1
+	popWord %pointer
+.end_macro
+
+.macro printSmallBoxLine (%cor %pointer %return)
+	paintSquare %cor %pointer 0
+	nextSquareHorizontal %pointer 18 #17(camp) + 1(inical column)
+	paintLine %cor %pointer 5 1
+	and %return %pointer %pointer #Set the return to the start of the SmallBox
+	resetSmallBox %pointer
+	nextSquareHorizontal %pointer 4 #Jump the small Box
+	paintLine %cor %pointer 5 1
+	magicMoveEndLine %pointer
+.end_macro
+
 #############
 # MAIN CODE #
 #############
@@ -1653,34 +1679,41 @@ printBaseInterface:
 	la $s0 0x797979 #Gray Border Color
 	#la $s1 0x10000000 #Pointer to the start of the display
 	and $s1 $gp $gp
-	paintFullLine $s0 $s1 1
+	and $s2 $0 $s0 #Space for the Score Pointer
+	and $s3 $s0 $s0 #Space for the Lines Pointer
 	
+	paintFullLine $s0 $s1 1
 	printCleanLine $s0 $s1 2
 	
 	printNextBlockLine $s0 $s1 6
 	
-	printCleanLine $s0 $s1 22
+	printCleanLine $s0 $s1 2
+	printSmallBoxLine $s0 $s1 $s2
+	printCleanLine $s0 $s1 3
+	printSmallBoxLine $s0 $s1 $s3
+	
+	printCleanLine $s0 $s1 15
 	paintFullLine $s0 $s1 1
 	
-	and $s1 $gp $gp
-	nextSquareHorizontal $s1 1
-	nextSquareVertical $s1 1
-	paintZero $s1 0
-	nextSquareHorizontal $s1 1
-	paintOne $s1 0
-	nextSquareHorizontal $s1 1
-	paintTwo $s1 0
-	nextSquareHorizontal $s1 1
-	paintThree $s1 0
-	nextSquareHorizontal $s1 1
-	paintFour $s1 0
-	nextSquareHorizontal $s1 1
-	paintFive $s1 0
-	nextSquareHorizontal $s1 1
-	paintSix $s1 0
-	nextSquareHorizontal $s1 1
-	paintSeven $s1 0
-	nextSquareHorizontal $s1 1
-	paintEight $s1 0
-	nextSquareHorizontal $s1 1
-	paintNine $s1 0
+	#and $s1 $gp $gp
+	#nextSquareHorizontal $s1 1
+	#nextSquareVertical $s1 1
+	#paintZero $s1 0
+	#nextSquareHorizontal $s1 1
+	#paintOne $s1 0
+	#nextSquareHorizontal $s1 1
+	#paintTwo $s1 0
+	#nextSquareHorizontal $s1 1
+	#paintThree $s1 0
+	#nextSquareHorizontal $s1 1
+	#paintFour $s1 0
+	#nextSquareHorizontal $s1 1
+	#paintFive $s1 0
+	#nextSquareHorizontal $s1 1
+	#paintSix $s1 0
+	#nextSquareHorizontal $s1 1
+	#paintSeven $s1 0
+	#nextSquareHorizontal $s1 1
+	#paintEight $s1 0
+	#nextSquareHorizontal $s1 1
+	#paintNine $s1 0
