@@ -65,12 +65,24 @@ return:
 # Macros para mover ponteiro #
 ##############################
 
-#Moves the pointer to the next 'n' square horizontalçy
+#Moves the pointer to the next 'n' square horizontaly
 .macro nextSquareHorizontal (%ponteiro, %range) #$1: Memori Poniter; $2: Quantity of Squares to jump
 	pushWord $t0
 	and $t0 $0 $0
 loop:
-	addi %ponteiro %ponteiro 64 # 16*6
+	addi %ponteiro %ponteiro 64 # 16*4
+	addi $t0 $t0 1
+	blt $t0 %range loop
+	nop
+	popWord $t0
+.end_macro
+
+#Moves the pointer to the previous 'n' square horizontaly
+.macro previousSquareHorizontal (%pointer, %range) #$1: Memori Poniter; $2: Quantity of Squares to jump
+	pushWord $t0
+	and $t0 $0 $0
+loop:
+	addi %pointer %pointer -64 #16 * 4
 	addi $t0 $t0 1
 	blt $t0 %range loop
 	nop
@@ -83,6 +95,18 @@ loop:
 	and $t0 $0 $0
 loop:
 	addi %ponteiro %ponteiro 32768 #64 * 32 * 16
+	addi $t0 $t0 1
+	blt $t0 %range loop
+	nop
+	popWord $t0
+.end_macro
+
+#Moves the pointer to the previous 'n' square vertically
+.macro previousSquareVertical (%ponteiro, %range) #$1: Memory Poniter; $2: Quantity of Squares to jump
+	pushWord $t0
+	and $t0 $0 $0
+loop:
+	addi %ponteiro %ponteiro -32768 #64 * 32 * 16
 	addi $t0 $t0 1
 	blt $t0 %range loop
 	nop
@@ -247,7 +271,7 @@ return:
 #####################
 
 #Saves the moviment of the piece
-.macro salvarMovimento
+.macro salvarMovimento #Takes no arguments
 	pushWord $t2
 	lw $t2 0xffff0000 #Read the 'Ready Bit'
 	beq $t2 $0 end #No new Value read
@@ -279,40 +303,43 @@ end:
 	popWord $t2
 .end_macro
 
-.macro mover(%pointer)
+#Moves the piece according to the FIFO List
+.macro mover(%pointer) #$1: Pointer to the piece to move
 	pushWord $t2
 	isFEmpty $t2
 	beq $t2 $0 end #No moviment in FIFO List
 	nop
 	popFWord $t2
-	beq $t2 0x57 W #If read 'W'
+	beq $t2 0x57 Spin #If read 'W'
 	nop
-	beq $t2 0x77 W #If read 'w'
+	beq $t2 0x77 Spin #If read 'w'
 	nop
-	beq $t2 0x41 A #If read 'A'
+	beq $t2 0x41 Left #If read 'A'
 	nop
-	beq $t2 0x61 A #If read 'a'
+	beq $t2 0x61 Left #If read 'a'
 	nop
-	beq $t2 0x53 S #If read 'S'
+	beq $t2 0x53 Right #If read 'S'
 	nop
-	beq $t2 0x73 S #If read 's'
+	beq $t2 0x73 Right #If read 's'
 	nop
-	beq $t2 0x44 D #If read 'D'
+	beq $t2 0x44 SoftDrop #If read 'D'
 	nop
-	beq $t2 0x64 D #If read 'd'
+	beq $t2 0x64 SoftDrop #If read 'd'
 	nop
-W:
+Spin:
 
 	j end
-A:
+Left:
+	moveLeft %pointer
 	j end
 
-S:
+Right:
 	moveDown %pointer
 	j end
-D:
+SoftDrop:
 	moveRight %pointer
 #	j end #No need for this Jump
+# nop
 end:
 	popWord $t2
 .end_macro
@@ -338,6 +365,17 @@ end:
 
 	popWord $t2
 .end_macro
+
+.macro moveLeft (%pointer)
+	pushWord $t2
+
+	lw $t2 (%pointer) #Get color
+	paintSquare $0 %pointer 0
+	previousSquareHorizontal %pointer 1
+	paintSquare $t2 %pointer 0
+
+	popWord $t2
+.end_macro
 #############
 # Main Code #
 #############
@@ -348,9 +386,15 @@ MovePiece:
 	and $s1 $gp $gp
 	and $s7 $0 $0
 	startFila
-	#nextSquareHorizontal $s1 1
-	#nextSquareHorizontal $s1 1
-	#nextSquareVertical $s1 1
+
+	# nextSquareHorizontal $s1 5
+	# nextSquareVertical $s1 5
+	# paintSquare $s0 $s1 0
+	# previousSquareHorizontal $s1 3
+	# paintSquare $s0 $s1 0
+	# previousSquareVertical $s1 3
+	# paintSquare $s0 $s1 0
+
 	paintSquare $s0 $s1 0
 
 loop:
