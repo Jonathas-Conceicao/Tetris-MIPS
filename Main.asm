@@ -1650,11 +1650,9 @@ loopNextBlock:
 #Reset to all 0's in the small box
 .macro resetSmallBox (%pointer) #$1: Pointer to the start of the small box;
 	pushWord %pointer
-	# paintZero %pointer 0  #Score EsterEgg
-	paintNine %pointer 0
+	paintZero %pointer 0
 	nextSquareHorizontal %pointer 1
-	# paintZero %pointer 0 #Score EsterEgg
-	paintOne %pointer 0
+	paintZero %pointer 0
 	nextSquareHorizontal %pointer 1
 	paintZero %pointer 0
 	nextSquareHorizontal %pointer 1
@@ -3214,6 +3212,843 @@ loopNextBlock:
 	popWord $t2
 .end_macro
 
+#Prints the interface and the text 'Lines'
+.macro printLinesLine (%cor %pointer) #$1: Color of the interface; $2: Pointer to the start of the Line
+	pushWord $t2
+	pushWord $t3
+
+	ori $t2 $0 0xb21030 #'Red' Color
+	ori $t3 $0 0xebd320 #'Yellow' Color
+	paintSquare %cor %pointer 0
+	nextSquareHorizontal %pointer 18 #17(camp) + 1(inicial column)
+	paintLine %cor %pointer 4 1
+
+	#Paints the first half of 'L' ####################################
+	pushWord %pointer
+	paintPixelLine %cor %pointer 16 0
+	nextPixelLine %pointer 1
+	#Line 2
+	pushWord %pointer
+	paintPixelLine %cor %pointer 10 1
+	paintPixel $t2 %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t2 %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 3 to 11
+	pushWord %pointer
+	paintPixelLine %cor %pointer 10 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	pushWord %pointer
+	paintPixelLine %cor %pointer 10 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	pushWord %pointer
+	paintPixelLine %cor %pointer 10 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	pushWord %pointer
+	paintPixelLine %cor %pointer 10 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	pushWord %pointer
+	paintPixelLine %cor %pointer 10 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	pushWord %pointer
+	paintPixelLine %cor %pointer 10 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	pushWord %pointer
+	paintPixelLine %cor %pointer 10 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	pushWord %pointer
+	paintPixelLine %cor %pointer 10 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	pushWord %pointer
+	paintPixelLine %cor %pointer 10 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 12
+	pushWord %pointer
+	paintPixelLine %cor %pointer 10 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 4 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 13
+	pushWord %pointer
+	paintPixelLine %cor %pointer 10 1
+	paintPixel $t2 %pointer
+	paintPixelLine $t3 %pointer 5 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 14
+	pushWord %pointer
+	paintPixelLine %cor %pointer 10 1
+	paintPixelLine $t2 %pointer 6 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Linha 15 & Linha 16
+	paintPixelLine %cor %pointer 16 0
+	nextPixelLine %pointer 1
+	paintPixelLine %cor %pointer 16 0
+	popWord %pointer
+	addi %pointer %pointer 64
+
+	#Paints the 'L/I' ####################################
+	pushWord %pointer
+	paintPixelLine %cor %pointer 16 0
+	nextPixelLine %pointer 1
+	#Line 2
+	pushWord %pointer
+	paintPixelLine %cor %pointer 11 1
+	paintPixelLine $t2 %pointer 5 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 3
+	pushWord %pointer
+	paintPixelLine %cor %pointer 11 1
+	paintPixel $t2 %pointer
+	paintPixelLine $t3 %pointer 4 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 4
+	pushWord %pointer
+	paintPixelLine %cor %pointer 11 1
+	paintPixelLine $t2 %pointer 4 1
+	paintPixel $t3 %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 5 to 11
+	pushWord %pointer
+	paintPixelLine %cor %pointer 14 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	pushWord %pointer
+	paintPixelLine %cor %pointer 14 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	pushWord %pointer
+	paintPixelLine %cor %pointer 14 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	pushWord %pointer
+	paintPixelLine %cor %pointer 14 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	pushWord %pointer
+	paintPixelLine %cor %pointer 14 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	pushWord %pointer
+	paintPixelLine %cor %pointer 14 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	pushWord %pointer
+	paintPixelLine %cor %pointer 14 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 12
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 4 1
+	paintPixelLine %cor %pointer 7 1
+	paintPixelLine $t2 %pointer 4 1
+	paintPixel $t3 %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 13
+	pushWord %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixelLine %cor %pointer 7 1
+	paintPixel $t2 %pointer
+	paintPixelLine $t3 %pointer 4 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 14
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 4 1
+	paintPixelLine %cor %pointer 7 1
+	paintPixelLine $t2 %pointer 5 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Linha 15 & Linha 16
+	paintPixelLine %cor %pointer 16 0
+	nextPixelLine %pointer 1
+	paintPixelLine %cor %pointer 16 0
+	popWord %pointer
+	addi %pointer %pointer 64
+
+	#Paints the 'I/N' ####################################
+	pushWord %pointer
+	paintPixelLine %cor %pointer 16 0
+	nextPixelLine %pointer 1
+	#Line 2
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 4 1
+	paintPixelLine %cor %pointer 6 1
+	paintPixel $t2 %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t2 %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 3
+	pushWord %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixelLine %cor %pointer 6 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t2 %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 4
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 4 1
+	paintPixelLine %cor %pointer 6 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t2 %pointer
+	paintPixel %cor %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 5
+	pushWord %pointer
+	paintPixel $t2 %pointer
+	paintPixelLine %cor %pointer 9 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixel %cor %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 6
+	pushWord %pointer
+	paintPixel $t2 %pointer
+	paintPixelLine %cor %pointer 9 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t2 %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 7 & Line 8
+	pushWord %pointer
+	paintPixel $t2 %pointer
+	paintPixelLine %cor %pointer 9 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	pushWord %pointer
+	paintPixel $t2 %pointer
+	paintPixelLine %cor %pointer 9 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 9
+	pushWord %pointer
+	paintPixel $t2 %pointer
+	paintPixelLine %cor %pointer 9 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixel %cor %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 10
+	pushWord %pointer
+	paintPixel $t2 %pointer
+	paintPixelLine %cor %pointer 9 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixel %cor %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t2 %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 11
+	pushWord %pointer
+	paintPixel $t2 %pointer
+	paintPixelLine %cor %pointer 9 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	paintPixel $t2 %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 12
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 4 1
+	paintPixelLine %cor %pointer 6 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	paintPixel $t2 %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 13
+	pushWord %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixelLine %cor %pointer 6 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 14
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 4 1
+	paintPixelLine %cor %pointer 6 1
+	paintPixel $t2 %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t2 %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Linha 15 & Linha 16
+	paintPixelLine %cor %pointer 16 0
+	nextPixelLine %pointer 1
+	paintPixelLine %cor %pointer 16 0
+	popWord %pointer
+	addi %pointer %pointer 64
+
+	#Paints the 'N/E' ####################################
+	pushWord %pointer
+	paintPixelLine %cor %pointer 16 0
+	nextPixelLine %pointer 1
+	#Line 2
+	pushWord %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixelLine %cor %pointer 6 1
+	paintPixelLine $t2 %pointer 5 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 3
+	pushWord %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixelLine %cor %pointer 6 1
+	paintPixel $t2 %pointer
+	paintPixelLine $t3 %pointer 4 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 4
+	pushWord %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixelLine %cor %pointer 6 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t2 %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 5 & Line 6
+	pushWord %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixelLine %cor %pointer 6 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	pushWord %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixelLine %cor %pointer 6 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 7
+	pushWord %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixelLine %cor %pointer 6 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t2 %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 8
+	pushWord %pointer
+	paintPixel $t2 %pointer
+	paintPixel %cor %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixelLine %cor %pointer 6 1
+	paintPixel $t2 %pointer
+	paintPixelLine $t3 %pointer 4 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 9
+	pushWord %pointer
+	paintPixel $t2 %pointer
+	paintPixel %cor %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixelLine %cor %pointer 6 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t2 %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 10 & Line 11
+	pushWord %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixelLine %cor %pointer 6 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	pushWord %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixelLine %cor %pointer 6 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 12
+	pushWord %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixelLine %cor %pointer 6 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t2 %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 13
+	pushWord %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixelLine %cor %pointer 6 1
+	paintPixel $t2 %pointer
+	paintPixelLine $t3 %pointer 4 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 14
+	pushWord %pointer
+	paintPixel %cor %pointer
+	paintPixelLine $t2 %pointer 4 1
+	paintPixelLine %cor %pointer 6 1
+	paintPixelLine $t2 %pointer 5 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Linha 15 & Linha 16
+	paintPixelLine %cor %pointer 16 0
+	nextPixelLine %pointer 1
+	paintPixelLine %cor %pointer 16 0
+	popWord %pointer
+	addi %pointer %pointer 64
+
+	#Paints the 'E/S' ####################################
+	pushWord %pointer
+	paintPixelLine %cor %pointer 16 0
+	nextPixelLine %pointer 1
+	#Line 2
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 4 1
+	paintPixelLine %cor %pointer 9 1
+	paintPixel $t2 %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t2 %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 3
+	pushWord %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixelLine %cor %pointer 8 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t3 %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 4
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 4 1
+	paintPixelLine %cor %pointer 7 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t2 %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 5 & Line 6
+	pushWord %pointer
+	paintPixelLine %cor %pointer 10 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	pushWord %pointer
+	paintPixelLine %cor %pointer 10 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 7
+	pushWord %pointer
+	paintPixel $t2 %pointer
+	paintPixelLine %cor %pointer 9 1
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixelLine $t2 %pointer 4 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 8
+	pushWord %pointer
+	paintPixel $t2 %pointer
+	paintPixelLine %cor %pointer 10 1
+	paintPixel $t2 %pointer
+	paintPixelLine $t3 %pointer 4 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 9
+	pushWord %pointer
+	paintPixel $t2 %pointer
+	paintPixelLine %cor %pointer 11 1
+	paintPixelLine $t2 %pointer 4 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 10 and Line 11
+	paintPixelLine %cor %pointer 16 0
+	nextPixelLine %pointer 1
+	paintPixelLine %cor %pointer 16 0
+	nextPixelLine %pointer 1
+	#Line 12
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 4 1
+	paintPixelLine %cor %pointer 7 1
+	paintPixelLine $t2 %pointer 5 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 13
+	pushWord %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixelLine %cor %pointer 7 1
+	paintPixel $t2 %pointer
+	paintPixelLine $t3 %pointer 4 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 14
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 4 1
+	paintPixelLine %cor %pointer 7 1
+	paintPixelLine $t2 %pointer 5 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Linha 15 & Linha 16
+	paintPixelLine %cor %pointer 16 0
+	nextPixelLine %pointer 1
+	paintPixelLine %cor %pointer 16 0
+	popWord %pointer
+	addi %pointer %pointer 64
+
+	#Paints the second half of 'S' ####################################
+	pushWord %pointer
+	paintPixelLine %cor %pointer 16 0
+	nextPixelLine %pointer 1
+	#Line 2
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 4 1
+	paintPixelLine %cor %pointer 12 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 3
+	pushWord %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixelLine %cor %pointer 12 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 4
+	pushWord %pointer
+	paintPixelLine $t2 %pointer 4 1
+	paintPixelLine %cor %pointer 12 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 5 & Line 6
+	paintPixelLine %cor %pointer 16 0
+	nextPixelLine %pointer 1
+	paintPixelLine %cor %pointer 16 0
+	nextPixelLine %pointer 1
+	#Line 7
+	pushWord %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t2 %pointer
+	paintPixelLine %cor %pointer 13 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 8
+	pushWord %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixelLine %cor %pointer 12 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 9
+	pushWord %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixelLine %cor %pointer 12 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 10 & Line 11
+	pushWord %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixelLine %cor %pointer 11 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	pushWord %pointer
+	paintPixel %cor %pointer
+	paintPixel %cor %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixelLine %cor %pointer 11 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 12
+	pushWord %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixelLine %cor %pointer 12 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 13
+	pushWord %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t3 %pointer
+	paintPixel $t2 %pointer
+	paintPixelLine %cor %pointer 13 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 14
+	pushWord %pointer
+	paintPixel $t2 %pointer
+	paintPixel $t2 %pointer
+	paintPixelLine %cor %pointer 14 1
+	popWord %pointer
+	nextPixelLine %pointer 1
+
+	#Linha 15 & Linha 16
+	paintPixelLine %cor %pointer 16 0
+	nextPixelLine %pointer 1
+	paintPixelLine %cor %pointer 16 0
+	popWord %pointer
+	addi %pointer %pointer 64
+
+	#After "Lines"
+	paintLine %cor %pointer 4 1
+	magicMoveEndLine %pointer
+
+	popWord $t3
+	popWord $t2
+.end_macro
+
+
 #############
 # MAIN CODE #
 #############
@@ -3234,7 +4069,8 @@ printBaseInterface:
 	printCleanLine $s0 $s1 1
 	printScoreLine $s0 $s1
 	printSmallBoxLine $s0 $s1 $s2
-	printCleanLine $s0 $s1 3
+	printCleanLine $s0 $s1 2
+	printLinesLine $s0 $s1
 	printSmallBoxLine $s0 $s1 $s3
 
 	printCleanLine $s0 $s1 15
