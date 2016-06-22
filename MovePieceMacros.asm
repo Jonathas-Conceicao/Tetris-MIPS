@@ -15,14 +15,14 @@
 # Macros da Fila #
 ##################
 
-#Start the FIFO Struct
-.macro startFila #Takes no argumento;
+#Start the FIFO List Struct
+.macro startFila #Takes no arguments;
 	la $t8 0x10000000 #Set Start of the List
 	and $t7 $t8 $t8
 .end_macro
 
-#Teste of the FIFO is empty
-.macro isFEmpty (%return) #$1: Receves 0 if FIFO is empty and 1 otherwise;
+#Teste of if FIFO List is empty
+.macro isFEmpty (%return) #$1: Receves 0 if FIFO List is empty and 1 otherwise;
 	beq $t8 0x10000000 empty
 	nop
 	ori %return $0 0x1
@@ -30,32 +30,32 @@
 	nop
 empty:
 	and %return $0 $0
-end: 
+end:
 .end_macro
 
-#Saves data to the FIFO
+#Saves data to the FIFO List
 .macro pushFWord (%dado) #$1: Data to be saved;
 	addi $t8 $t8 4
 	sw %dado ($t8)
 .end_macro
 
-#Get a file from the FIFO
+#Get a data from the FIFO List
 .macro popFWord (%dado) #$s1 recives the data
 	pushWord $t0
 	isFEmpty $t0
-	beq $t0 $0 return #Does nothing if FIFO is empty
+	beq $t0 $0 return #Does nothing if FIFO List is empty
 	nop
 	lw %dado 4($t7)
 	pushWord %dado
 	pushWord $t7
-loopPopF: #loop to move the elements in the FIFO
+loopPopF: #loop to move the elements in the FIFO List
 	lw $t0 8($t7) #Get Next Value
 	sw $t0 4($t7) #Store here
 	addi $t7 $t7 4
 	blt $t7 $t8 loopPopF
 	nop
 return:
-	addi $t8 $t8 -4 #Updates the last FIFO position
+	addi $t8 $t8 -4 #Updates the last FIFO List position
 	popWord $t7
 	popWord %dado
 	popWord $t0
@@ -218,7 +218,7 @@ return:
 
 #This is some magic that's necessary so things wouldn't fall apart
 .macro magicMoveEndLine (%pointer)
-	addi %pointer %pointer 30720 #Magic numbers muah ha ha (16*32*15*4)	
+	addi %pointer %pointer 30720 #Magic numbers muah ha ha (16*32*15*4)
 .end_macro
 
 #Paint a column of 'n' squares
@@ -246,30 +246,96 @@ return:
 # Move Piece Macros #
 #####################
 
-.macro leituraDeMovimento (%return)
-		
+#Saves the moviment of the piece
+.macro salvarMovimento
+	pushWord $t2
+	lw $t2 0xffff0000 #Read the 'Ready Bit'
+	beq $t2 $0 end #No new Value read
+	nop
+	lw $t2 0xffff0004 #Read the action
+	beq $t2 0x57 store #If read 'W'
+	nop
+	beq $t2 0x77 store #If read 'w'
+	nop
+	beq $t2 0x41 store #If read 'A'
+	nop
+	beq $t2 0x61 store #If read 'a'
+	nop
+	beq $t2 0x53 store #If read 'S'
+	nop
+	beq $t2 0x73 store #If read 's'
+	nop
+	beq $t2 0x44 store #If read 'D'
+	nop
+	beq $t2 0x64 store #If read 'd'
+	nop
+	j end #Invalid key
+	nop
+store:
+	pushFWord $t2 #Sends movement to the FIFO List
+	j end
+	nop
+end:
+	popWord $t2
+.end_macro
 
+.macro mover(%pointer)
+	pushWord $t2
+	isFEmpty $t2
+	beq $t2 $0 end #No moviment in FIFO List
+	nop
+	popFWord $t2
+	beq $t2 0x57 W #If read 'W'
+	nop
+	beq $t2 0x77 W #If read 'w'
+	nop
+	beq $t2 0x41 A #If read 'A'
+	nop
+	beq $t2 0x61 A #If read 'a'
+	nop
+	beq $t2 0x53 S #If read 'S'
+	nop
+	beq $t2 0x73 S #If read 's'
+	nop
+	beq $t2 0x44 D #If read 'D'
+	nop
+	beq $t2 0x64 D #If read 'd'
+	nop
+W:
+
+	j end
+A:
+	j end
+
+S:
+	moveDown %pointer
+	j end
+D:
+	moveRight %pointer
+#	j end #No need for this Jump
+end:
+	popWord $t2
 .end_macro
 
 .macro moveDown (%pointer)
 	pushWord $t2
-	
+
 	lw $t2 (%pointer) #Get Color
 	paintSquare $0 %pointer 0
 	nextSquareVertical %pointer 1
 	paintSquare $t2 %pointer 0
-	
+
 	popWord $t2
 .end_macro
 
 .macro moveRight (%pointer)
 	pushWord $t2
-	
+
 	lw $t2 (%pointer) #Get Color
 	paintSquare $0 %pointer 0
 	nextSquareHorizontal %pointer 1
 	paintSquare $t2 %pointer 0
-	
+
 	popWord $t2
 .end_macro
 #############
@@ -280,28 +346,31 @@ return:
 MovePiece:
 	la $s0 0x797979
 	and $s1 $gp $gp
-	la $s3 0xffff0004
-	and $s5 $0 $0
+	and $s7 $0 $0
+	startFila
 	#nextSquareHorizontal $s1 1
 	#nextSquareHorizontal $s1 1
 	#nextSquareVertical $s1 1
 	paintSquare $s0 $s1 0
 
 loop:
-	lw $s4 ($s3)
-	sw $0 ($s3)
-	beq $s4 $0 dontMove
+
+	salvarMovimento
+	addi $s7 $s7 1
+	beq $s7 99999 autoMove #Time to move
 	nop
-	moveRight $s1
-	j dontMove
+	salvarMovimento
+	mover $s1
+	salvarMovimento
+	j loop
+	nop
 autoMove:
-	add $s5 $0 $0
+	salvarMovimento
+	add $s7 $0 $0
 	moveDown $s1
+	salvarMovimento
 	j loop
 	nop
-dontMove:
-	addi $s5 $s5 1
-	beq $s5 99999 autoMove
-	j loop
-	nop
+#dontMove:
+
 end:
