@@ -22,15 +22,16 @@
 .end_macro
 
 #Teste of if FIFO List is empty
-.macro isFEmpty (%return) #$1: Receves 0 if FIFO List is empty and 1 otherwise;
-	beq $t8 0x10000000 empty
-	nop
-	ori %return $0 0x1
-	j end
-	nop
-empty:
-	and %return $0 $0
-end:
+.macro isFEmpty #$v0: Returns 0 if FIFO List is empty and 1 otherwise;
+	sne $v0 $t8 0x10000000
+# beq $t8 0x10000000 empty
+# 	nop
+# 	ori $v0 $0 0x1
+# 	j end
+# 	nop
+# empty:
+# 	and $v0 $0 $0
+# end:
 .end_macro
 
 #Saves data to the FIFO List
@@ -41,24 +42,24 @@ end:
 
 #Get a data from the FIFO List
 .macro popFWord (%dado) #$s1 recives the data
-	pushWord $t0
-	isFEmpty $t0
-	beq $t0 $0 return #Does nothing if FIFO List is empty
+	isFEmpty
+	beq $v0 $0 return #Does nothing if FIFO List is empty
 	nop
 	lw %dado 4($t7)
+	pushWord $t0
 	pushWord %dado
-	pushWord $t7
+	pushWord $t7 #Saves the pointer
 loopPopF: #loop to move the elements in the FIFO List
 	lw $t0 8($t7) #Get Next Value
 	sw $t0 4($t7) #Store here
 	addi $t7 $t7 4
 	blt $t7 $t8 loopPopF
 	nop
-return:
-	addi $t8 $t8 -4 #Updates the last FIFO List position
 	popWord $t7
 	popWord %dado
 	popWord $t0
+	addi $t8 $t8 -4 #Updates the last FIFO List position
+	return:
 .end_macro
 
 ##############################
@@ -270,6 +271,14 @@ return:
 # Move Piece Macros #
 #####################
 
+#Testes if a block can be moved to that space
+.macro isBlockFree (%pointer) #$1: Pointer of block to be tested; $v0: Returns 1 if empty, otherwise returns 0
+	pushWord $t0
+	lw $t0 (%pointer)
+	seq $v0 $t0 $0 #If $t0 == $0 then $v0 = 1, else $v0 = 0
+	popWord $t0
+.end_macro
+
 #Saves the moviment of the piece
 .macro salvarMovimento #Takes no arguments
 	pushWord $t2
@@ -306,8 +315,8 @@ end:
 #Moves the piece according to the FIFO List
 .macro mover(%pointer) #$1: Pointer to the piece to move
 	pushWord $t2
-	isFEmpty $t2
-	beq $t2 $0 end #No moviment in FIFO List
+	isFEmpty
+	beq $v0 $0 end #Jump if there is no moviment in FIFO List
 	nop
 	popFWord $t2
 	beq $t2 0x57 Spin #If read 'W'
@@ -346,34 +355,62 @@ end:
 
 .macro moveDown (%pointer)
 	pushWord $t2
+	pushWord $t3
+
+	and $t3 %pointer %pointer #Copy the pointer
+	nextSquareVertical $t3 1
+	isBlockFree $t3
+	beq $v0 $0 end #Dont Move if space isn't free
+	nop
 
 	lw $t2 (%pointer) #Get Color
 	paintSquare $0 %pointer 0
 	nextSquareVertical %pointer 1
 	paintSquare $t2 %pointer 0
 
+end:
+	popWord $t3
 	popWord $t2
 .end_macro
 
 .macro moveRight (%pointer)
 	pushWord $t2
+	pushWord $t3
+
+	and $t3 %pointer %pointer #Copy the pointer
+	nextSquareHorizontal $t3 1
+	isBlockFree $t3
+	beq $v0 $0 end #Dont Move if space isn't free
+	nop
 
 	lw $t2 (%pointer) #Get Color
 	paintSquare $0 %pointer 0
 	nextSquareHorizontal %pointer 1
 	paintSquare $t2 %pointer 0
 
+end:
+	popWord $t3
 	popWord $t2
 .end_macro
 
-.macro moveLeft (%pointer)
+#Moves a block to the left
+.macro moveLeft (%pointer) #$1: Pointer to square;
 	pushWord $t2
+	pushWord $t3
+
+	and $t3 %pointer %pointer #Copy the pointer
+	previousSquareHorizontal $t3 1
+	isBlockFree $t3
+	beq $v0 $0 end #Dont Move if space isn't free
+	nop
 
 	lw $t2 (%pointer) #Get color
 	paintSquare $0 %pointer 0
 	previousSquareHorizontal %pointer 1
 	paintSquare $t2 %pointer 0
 
+end:
+	popWord $t3
 	popWord $t2
 .end_macro
 #############
@@ -384,24 +421,20 @@ end:
 MovePiece:
 	la $s0 0x797979
 	and $s1 $gp $gp
-	and $s7 $0 $0
+	# and $s7 $0 $0
 	startFila
 
-	# nextSquareHorizontal $s1 5
-	# nextSquareVertical $s1 5
-	# paintSquare $s0 $s1 0
-	# previousSquareHorizontal $s1 3
-	# paintSquare $s0 $s1 0
-	# previousSquareVertical $s1 3
-	# paintSquare $s0 $s1 0
+	and $s7 $s1 $s1
+	nextSquareVertical $s7 10
+	paintFullLine $s0 $s7 0
+	and $s7 $0 $0
 
 	paintSquare $s0 $s1 0
 
 loop:
-
 	salvarMovimento
 	addi $s7 $s7 1
-	beq $s7 99999 autoMove #Time to move
+	beq $s7 9999 autoMove #Time to move
 	nop
 	salvarMovimento
 	mover $s1

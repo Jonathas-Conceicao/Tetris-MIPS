@@ -6,9 +6,61 @@
 	addi $sp $sp -4
 	sw %dado ($sp)
 .end_macro
+
 .macro popWord (%dado)
 	lw %dado ($sp)
 	addi $sp $sp 4
+.end_macro
+
+##################
+# Macros da Fila #
+##################
+
+#Start the FIFO List Struct
+.macro startFila #Takes no arguments;
+	la $t8 0x10000000 #Set Start of the List
+	and $t7 $t8 $t8
+.end_macro
+
+#Teste of if FIFO List is empty
+.macro isFEmpty #$v0: Returns 0 if FIFO List is empty and 1 otherwise;
+	sne $v0 $t8 0x10000000
+# beq $t8 0x10000000 empty
+# 	nop
+# 	ori $v0 $0 0x1
+# 	j end
+# 	nop
+# empty:
+# 	and $v0 $0 $0
+# end:
+.end_macro
+
+#Saves data to the FIFO List
+.macro pushFWord (%dado) #$1: Data to be saved;
+	addi $t8 $t8 4
+	sw %dado ($t8)
+.end_macro
+
+#Get a data from the FIFO List
+.macro popFWord (%dado) #$s1 recives the data
+	isFEmpty
+	beq $v0 $0 return #Does nothing if FIFO List is empty
+	nop
+	lw %dado 4($t7)
+	pushWord $t0
+	pushWord %dado
+	pushWord $t7 #Saves the pointer
+loopPopF: #loop to move the elements in the FIFO List
+	lw $t0 8($t7) #Get Next Value
+	sw $t0 4($t7) #Store here
+	addi $t7 $t7 4
+	blt $t7 $t8 loopPopF
+	nop
+	popWord $t7
+	popWord %dado
+	popWord $t0
+	addi $t8 $t8 -4 #Updates the last FIFO List position
+	return:
 .end_macro
 
 ##############################
@@ -27,12 +79,36 @@ loop:
 	popWord $t0
 .end_macro
 
+#Moves the pointer to the previous 'n' square horizontaly
+.macro previousSquareHorizontal (%pointer, %range) #$1: Memori Poniter; $2: Quantity of Squares to jump
+	pushWord $t0
+	and $t0 $0 $0
+loop:
+	addi %pointer %pointer -64 #16 * 4
+	addi $t0 $t0 1
+	blt $t0 %range loop
+	nop
+	popWord $t0
+.end_macro
+
 #Moves the pointer to the next 'n' square vertically
 .macro nextSquareVertical (%pointer, %range) #$1: Memory Pointer; $2: Quantity of Squares to jump
 	pushWord $t0
 	and $t0 $0 $0
 loop:
 	addi %pointer %pointer 32768 #64 * 32 * 16
+	addi $t0 $t0 1
+	blt $t0 %range loop
+	nop
+	popWord $t0
+.end_macro
+
+#Moves the pointer to the previous 'n' square vertically
+.macro previousSquareVertical (%ponteiro, %range) #$1: Memory Poniter; $2: Quantity of Squares to jump
+	pushWord $t0
+	and $t0 $0 $0
+loop:
+	addi %ponteiro %ponteiro -32768 #64 * 32 * 16
 	addi $t0 $t0 1
 	blt $t0 %range loop
 	nop
@@ -88,7 +164,7 @@ return:
 # Macros para a printar Quadrados #
 ###################################
 
-#Paint with ($2) color the square that starts and pointer($2)
+#Paint with ($1) color the square that starts and pointer($2)
 .macro paintSquare (%cor, %pointer, %flag) #$1: Color to paint; $2: square pointer; $3: '0' returns origal pointer, else returns the finish pointer;
 	pushWord $t0
 	pushWord $t1
@@ -1662,11 +1738,11 @@ loopNextBlock:
 .end_macro
 
 #Prints the interface and the Score/Lines box
-.macro printSmallBoxLine (%cor %pointer %return) #$1: Color of the interface; $2 Pointer to start of the line $3: Returns the start of the SmallBox
+.macro printSmallBoxLine (%cor %pointer) #$1: Color of the interface; $2 Pointer to start of the line; $v0: Returns the start of the SmallBox
 	paintSquare %cor %pointer 0
 	nextSquareHorizontal %pointer 18 #17(camp) + 1(inical column)
 	paintLine %cor %pointer 5 1
-	and %return %pointer %pointer #Set the return to the start of the SmallBox
+	and $v0 %pointer %pointer #Set the return to the start of the SmallBox
 	resetSmallBox %pointer
 	nextSquareHorizontal %pointer 4 #Jump the small Box
 	paintLine %cor %pointer 5 1
@@ -4048,30 +4124,232 @@ loopNextBlock:
 	popWord $t2
 .end_macro
 
+#####################
+# Move Piece Macros #
+#####################
+
+#Testes if a block can be moved to that space
+.macro isBlockFree (%pointer) #$1: Pointer of block to be tested; $v0: Returns 1 if empty, otherwise returns 0
+	pushWord $t0
+	lw $t0 (%pointer)
+	seq $v0 $t0 $0 #If $t0 == $0 then $v0 = 1, else $v0 = 0
+	popWord $t0
+.end_macro
+
+#Saves the moviment of the piece
+.macro salvarMovimento #Takes no arguments
+	pushWord $t2
+	lw $t2 0xffff0000 #Read the 'Ready Bit'
+	beq $t2 $0 end #No new Value read
+	nop
+	lw $t2 0xffff0004 #Read the action
+	beq $t2 0x57 store #If read 'W'
+	nop
+	beq $t2 0x77 store #If read 'w'
+	nop
+	beq $t2 0x41 store #If read 'A'
+	nop
+	beq $t2 0x61 store #If read 'a'
+	nop
+	beq $t2 0x53 store #If read 'S'
+	nop
+	beq $t2 0x73 store #If read 's'
+	nop
+	beq $t2 0x44 store #If read 'D'
+	nop
+	beq $t2 0x64 store #If read 'd'
+	nop
+	j end #Invalid key
+	nop
+store:
+	pushFWord $t2 #Sends movement to the FIFO List
+	j end
+	nop
+end:
+	popWord $t2
+.end_macro
+
+#Moves the piece according to the FIFO List
+.macro mover(%pointer) #$1: Pointer to the piece to move
+	pushWord $t2
+	isFEmpty
+	beq $v0 $0 end #Jump if there is no moviment in FIFO List
+	nop
+	popFWord $t2
+	beq $t2 0x57 Spin #If read 'W'
+	nop
+	beq $t2 0x77 Spin #If read 'w'
+	nop
+	beq $t2 0x41 Left #If read 'A'
+	nop
+	beq $t2 0x61 Left #If read 'a'
+	nop
+	beq $t2 0x53 Right #If read 'S'
+	nop
+	beq $t2 0x73 Right #If read 's'
+	nop
+	beq $t2 0x44 SoftDrop #If read 'D'
+	nop
+	beq $t2 0x64 SoftDrop #If read 'd'
+	nop
+Spin:
+
+	j end
+Left:
+	moveLeft %pointer
+	j end
+
+Right:
+	moveDown %pointer
+	j end
+SoftDrop:
+	moveRight %pointer
+#	j end #No need for this Jump
+# nop
+end:
+	popWord $t2
+.end_macro
+
+#Moves down a block
+.macro moveDown (%pointer) #$1: Pointer to square; $v0: Returns 1 if fails to move down.
+	pushWord $t2
+	pushWord $t3
+	and $t3 %pointer %pointer #Copy the pointer
+	nextSquareVertical $t3 1
+	isBlockFree $t3
+	beq $v0 $0 fail #Dont Move if space isn't free and returns a msn
+	nop
+	lw $t2 (%pointer) #Get Color
+	paintSquare $0 %pointer 0
+	nextSquareVertical %pointer 1
+	paintSquare $t2 %pointer 0
+	and $v0 $0 $0 #Set return value to success
+	j end
+	nop
+fail:
+	ori $v0 $0 1
+end:
+	popWord $t3
+	popWord $t2
+.end_macro
+
+#Moves a block to the right
+.macro moveRight (%pointer) #$1: Pointer to square;
+	pushWord $t2
+	pushWord $t3
+
+	and $t3 %pointer %pointer #Copy the pointer
+	nextSquareHorizontal $t3 1
+	isBlockFree $t3
+	beq $v0 $0 end #Dont Move if space isn't free
+	nop
+
+	lw $t2 (%pointer) #Get Color
+	paintSquare $0 %pointer 0
+	nextSquareHorizontal %pointer 1
+	paintSquare $t2 %pointer 0
+
+end:
+	popWord $t3
+	popWord $t2
+.end_macro
+
+#Moves a block to the left
+.macro moveLeft (%pointer) #$1: Pointer to square;
+	pushWord $t2
+	pushWord $t3
+
+	and $t3 %pointer %pointer #Copy the pointer
+	previousSquareHorizontal $t3 1
+	isBlockFree $t3
+	beq $v0 $0 end #Dont Move if space isn't free
+	nop
+
+	lw $t2 (%pointer) #Get color
+	paintSquare $0 %pointer 0
+	previousSquareHorizontal %pointer 1
+	paintSquare $t2 %pointer 0
+
+end:
+	popWord $t3
+	popWord $t2
+.end_macro
+
 
 #############
 # MAIN CODE #
 #############
 .text
+	jal printBaseInterface
+	nop
+	and $s2 $v0 $v0 #Score Box Pointer
+	and $s3 $v0 $v0 #Lines Box Pointer
+
+	and $s1 $gp $gp #Pointer to block
+	ori $s0 $0 0xb21030 #Color to the block
+	nextSquareVertical $s1 1
+	nextSquareHorizontal $s1 9
+	paintSquare $s0 $s1 0
+
+	and $a0 $s0 $s0
+	and $a1 $s1 $s1
+	jal MovePiece
+	nop
+	ori $v0 $0 0xA
+	syscall #End the game
+
+#Subrotine to move the piece
+	MovePiece:
+		startFila
+		and $t0 $0 $0
+		paintSquare $a0 $a1 0
+
+	loop:
+		salvarMovimento
+		addi $t0 $t0 1
+		beq $t0 9999 autoMove #Time to move
+		nop
+		salvarMovimento
+		mover $a1
+		salvarMovimento
+		j loop
+		nop
+	autoMove:
+		salvarMovimento
+		add $t0 $0 $0
+		moveDown $a1
+		salvarMovimento
+		bne $v0 $0 stop	# if $v0 != 0 then
+		nop
+		j loop
+		nop
+	stop:
+	jr $ra
+	nop
+
 printBaseInterface:
-	la $s0 0x797979 #Gray Border Color
+	la $a0 0x797979 #Gray Border Color
 	#la $s1 0x10000000 #Pointer to the start of the display
-	and $s1 $gp $gp
-	and $s2 $0 $s0 #Space for the Score Pointer
-	and $s3 $s0 $s0 #Space for the Lines Pointer
+	and $a1 $gp $gp
+	and $v0 $0 $0 #Space for the Score Pointer
+	and $v1 $0 $0 #Space for the Lines Pointer
 
-	paintFullLine $s0 $s1 1
-	printCleanLine $s0 $s1 1
-	printNextLine $s0 $s1
+	paintFullLine $a0 $a1 1
+	printCleanLine $a0 $a1 1
+	printNextLine $a0 $a1
 
-	printNextBlockLine $s0 $s1 6
+	printNextBlockLine $a0 $a1 6
 
-	printCleanLine $s0 $s1 1
-	printScoreLine $s0 $s1
-	printSmallBoxLine $s0 $s1 $s2
-	printCleanLine $s0 $s1 2
-	printLinesLine $s0 $s1
-	printSmallBoxLine $s0 $s1 $s3
-
-	printCleanLine $s0 $s1 15
-	paintFullLine $s0 $s1 1
+	printCleanLine $a0 $a1 1
+	printScoreLine $a0 $a1
+	printSmallBoxLine $a0 $a1
+	and $t0 $v0 $v0
+	printCleanLine $a0 $a1 2
+	printLinesLine $a0 $a1
+	printSmallBoxLine $a0 $a1
+	and $v1 $v0 $v0
+	and $v0 $t1 $t1
+	printCleanLine $a0 $a1 15
+	paintFullLine $a0 $a1 1
+	jr $ra
+	nop
