@@ -4323,7 +4323,7 @@ end:
 .end_macro
 
 #Moves the piece according to the FIFO List
-.macro mover(%pointer) #$1: Pointer to the piece to move $v0: Returns 1 if no move is made.
+.macro mover (%p1, %p2, %p3, %p4) #$1 to 4: Pointesr to the piece to move; $v0: Returns 1 if no move is made.
 	pushWord $t2
 	isFEmpty
 	and $t2 $v0 $v0 #Saves return of the function
@@ -4352,17 +4352,17 @@ Spin:
 	j end
 	nop
 Left:
-	moveLeft %pointer
+	moveLeft %p1 %p2 %p3 %p4
 	and $v0 $0 $0 #Set return falg to indicates move made
 	j end
 	nop
 Right:
-	moveDown %pointer
+	moveDown %p1 %p2 %p3 %p4
 	and $v0 $0 $0 #Set return falg to indicates move made
 	j end
 	nop
 SoftDrop:
-	moveRight %pointer
+	moveRight %p1 %p2 %p3 %p4
 	and $v0 $0 $0 #Set return falg to indicates move made
 #	j end #No need for this Jump
 # nop
@@ -4372,22 +4372,49 @@ end:
 .end_macro
 
 #Moves down a block
-.macro moveDown (%pointer) #$1: Pointer to square; $v0: Returns 1 if fails to move.
+.macro moveDown (%p1, %p2, %p3, %p4) #$1 to 4: Pointesr to the piece to move; $v0: Returns 1 if fails to move.
 	pushWord $t2
 	pushWord $t3
 	pushWord $t4
-	and $t3 %pointer %pointer #Copy the pointer
+
+	and $t3 %p1 %p1 #Copy the pointer
 	nextSquareVertical $t3 1
 	isBlockFree $t3
 	beq $v0 $0 fail #Dont Move if space isn't free and returns a flag
 	nop
-	lw $t2 8(%pointer) #(2*4) Get Light
-	lw $t3 2104(%pointer) #(16*32*4) + (14*4)Get Dark
-	lw $t4 4112(%pointer) #(16*32*4*2) + (4*4)Get Color
+	and $t3 %p2 %p2 #Copy the pointer
+	nextSquareVertical $t3 1
+	isBlockFree $t3
+	beq $v0 $0 fail #Dont Move if space isn't free and returns a flag
+	nop
+	and $t3 %p3 %p3 #Copy the pointer
+	nextSquareVertical $t3 1
+	isBlockFree $t3
+	beq $v0 $0 fail #Dont Move if space isn't free and returns a flag
+	nop
+	and $t3 %p4 %p4 #Copy the pointer
+	nextSquareVertical $t3 1
+	isBlockFree $t3
+	beq $v0 $0 fail #Dont Move if space isn't free and returns a flag
+	nop
 
-	paintSquare $0 %pointer 0
-	nextSquareVertical %pointer 1
-	paintBlock $t4 $t2 $t3 %pointer 0
+	lw $t2 8(%p1) #(2*4) Get Light
+	lw $t3 2104(%p1) #(16*32*4) + (14*4)Get Dark
+	lw $t4 4112(%p1) #(16*32*4*2) + (4*4)Get Color
+
+	paintSquare $0 %p1 0
+	paintSquare $0 %p2 0
+	paintSquare $0 %p3 0
+	paintSquare $0 %p4 0
+	nextSquareVertical %p1 1
+	nextSquareVertical %p2 1
+	nextSquareVertical %p3 1
+	nextSquareVertical %p4 1
+	paintBlock $t4 $t2 $t3 %p1 0
+	paintBlock $t4 $t2 $t3 %p2 0
+	paintBlock $t4 $t2 $t3 %p3 0
+	paintBlock $t4 $t2 $t3 %p4 0
+
 	and $v0 $0 $0 #Set return value to success
 	j end
 	nop
@@ -4400,24 +4427,52 @@ end:
 .end_macro
 
 #Moves a block to the right
-.macro moveRight (%pointer) #$1: Pointer to square; $v0: Returns 1 if fails to move.
+.macro moveRight (%p1, %p2, %p3, %p4) #$1 to 4: Pointesr to the piece to move; $v0: Returns 1 if fails to move.
 	pushWord $t2
 	pushWord $t3
 	pushWord $t4
 
-	and $t3 %pointer %pointer #Copy the pointer
+	and $t3 %p1 %p1 #Copy the pointer
 	nextSquareHorizontal $t3 1
 	isBlockFree $t3
 	beq $v0 $0 fail #Dont Move if space isn't free
 	nop
-	and $v0 $0 $0
-	lw $t2 8(%pointer) #(2*4) Get Light
-	lw $t3 2104(%pointer) #(16*32*4) + (14*4)Get Dark
-	lw $t4 4108(%pointer) #(16*32*4*2) + (3*4)Get Color
+	and $t3 %p2 %p2 #Copy the pointer
+	nextSquareHorizontal $t3 1
+	isBlockFree $t3
+	beq $v0 $0 fail #Dont Move if space isn't free
+	nop
+	and $t3 %p3 %p3 #Copy the pointer
+	nextSquareHorizontal $t3 1
+	isBlockFree $t3
+	beq $v0 $0 fail #Dont Move if space isn't free
+	nop
+	and $t3 %p4 %p4 #Copy the pointer
+	nextSquareHorizontal $t3 1
+	isBlockFree $t3
+	beq $v0 $0 fail #Dont Move if space isn't free
+	nop
 
-	paintSquare $0 %pointer 0
-	nextSquareHorizontal %pointer 1
-	paintBlock $t4 $t2 $t3 %pointer 0
+	lw $t2 8(%p1) #(2*4) Get Light
+	lw $t3 2104(%p1) #(16*32*4) + (14*4)Get Dark
+	lw $t4 4112(%p1) #(16*32*4*2) + (4*4)Get Color
+
+	paintSquare $0 %p1 0
+	paintSquare $0 %p2 0
+	paintSquare $0 %p3 0
+	paintSquare $0 %p4 0
+	nextSquareHorizontal %p1 1
+	nextSquareHorizontal %p2 1
+	nextSquareHorizontal %p3 1
+	nextSquareHorizontal %p4 1
+	paintBlock $t4 $t2 $t3 %p1 0
+	paintBlock $t4 $t2 $t3 %p2 0
+	paintBlock $t4 $t2 $t3 %p3 0
+	paintBlock $t4 $t2 $t3 %p4 0
+
+	and $v0 $0 $0 #Set return value to success
+	j end
+	nop
 fail:
 	ori $v0 $0 1
 end:
@@ -4427,24 +4482,52 @@ end:
 .end_macro
 
 #Moves a block to the left
-.macro moveLeft (%pointer) #$1: Pointer to square; $v0: Returns 1 if fails to move.
+.macro moveLeft (%p1, %p2, %p3, %p4) #$1 to 4: Pointesr to the piece to move; $v0: Returns 1 if fails to move.
 	pushWord $t2
 	pushWord $t3
 	pushWord $t4
 
-	and $t3 %pointer %pointer #Copy the pointer
+	and $t3 %p1 %p1 #Copy the pointer
 	previousSquareHorizontal $t3 1
 	isBlockFree $t3
 	beq $v0 $0 fail #Dont Move if space isn't free
 	nop
-	and $v0 $0 $0
-	lw $t2 8(%pointer) #(2*4) Get Light
-	lw $t3 2104(%pointer) #(16*32*4) + (14*4)Get Dark
-	lw $t4 4108(%pointer) #(16*32*4*2) + (3*4)Get Color
+	and $t3 %p2 %p2 #Copy the pointer
+	previousSquareHorizontal $t3 1
+	isBlockFree $t3
+	beq $v0 $0 fail #Dont Move if space isn't free
+	nop
+	and $t3 %p3 %p3 #Copy the pointer
+	previousSquareHorizontal $t3 1
+	isBlockFree $t3
+	beq $v0 $0 fail #Dont Move if space isn't free
+	nop
+	and $t3 %p4 %p4 #Copy the pointer
+	previousSquareHorizontal $t3 1
+	isBlockFree $t3
+	beq $v0 $0 fail #Dont Move if space isn't free
+	nop
 
-	paintSquare $0 %pointer 0
-	previousSquareHorizontal %pointer 1
-	paintBlock $t4 $t2 $t3 %pointer 0
+	lw $t2 8(%p1) #(2*4) Get Light
+	lw $t3 2104(%p1) #(16*32*4) + (14*4)Get Dark
+	lw $t4 4112(%p1) #(16*32*4*2) + (4*4)Get Color
+
+	paintSquare $0 %p1 0
+	paintSquare $0 %p2 0
+	paintSquare $0 %p3 0
+	paintSquare $0 %p4 0
+	previousSquareHorizontal %p1 1
+	previousSquareHorizontal %p2 1
+	previousSquareHorizontal %p3 1
+	previousSquareHorizontal %p4 1
+	paintBlock $t4 $t2 $t3 %p1 0
+	paintBlock $t4 $t2 $t3 %p2 0
+	paintBlock $t4 $t2 $t3 %p3 0
+	paintBlock $t4 $t2 $t3 %p4 0
+
+	and $v0 $0 $0
+	j end
+	nop
 fail:
 	ori $v0 $0 1
 end:
@@ -4469,16 +4552,29 @@ end:
 	ori $s5 $0 0x386900 #Shadow to the block
 	nextSquareVertical $s1 1
 	nextSquareHorizontal $s1 9
-	paintBlock $s0 $s4 $s5 $s1 0
 
+	paintBlock $s0 $s4 $s5 $s1 0
 	and $a0 $s1 $s1
+
+	nextSquareVertical $s1 1
+	paintBlock $s0 $s4 $s5 $s1 0
+	and $a1 $s1 $s1
+
+	previousSquareHorizontal $s1 1
+	paintBlock $s0 $s4 $s5 $s1 0
+	and $a2 $s1 $s1
+
+	previousSquareHorizontal $s1 1
+	paintBlock $s0 $s4 $s5 $s1 0
+	and $a3 $s1 $s1
+
 	jal MovePiece
 	nop
 	ori $v0 $0 0xA
 	syscall #End the game
 
 #Subrotine to move the piece
-	MovePiece:
+	MovePiece: #Takes 4 arguments, the pointers to the piece
 		startFila
 		and $t0 $0 $0
 
@@ -4488,7 +4584,7 @@ end:
 		bgt $t0 19999 autoMove #Control time to move
 		nop
 		salvarMovimento
-		mover $a0
+		mover $a0 $a1 $a2 $a3
 		#salvarMovimento
 		beq $v0 1 loop
 		nop
@@ -4498,7 +4594,7 @@ end:
 	autoMove:
 		salvarMovimento
 		add $t0 $0 $0
-		moveDown $a0
+		moveDown $a0 $a1 $a2 $a3
 		salvarMovimento
 		bne $v0 $0 stop	# if $v0 != 0 then
 		nop
