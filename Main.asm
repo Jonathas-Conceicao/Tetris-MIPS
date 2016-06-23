@@ -196,6 +196,159 @@ StartPointer:
 return:
 .end_macro
 
+#Paints a block of the game
+.macro paintBlock (%cor %light %shadow %pointer %flag) #$1 - $t3: Colors to paint the block; $2: square pointer; $3: '0' returns origal pointer, else returns the finish pointer;
+	pushWord %pointer
+
+	#Sstarts paiting
+	#Line 1
+	pushWord %pointer
+	paintPixel $0 %pointer
+	paintPixel $0 %pointer
+	paintPixelLine %light %pointer 12 1
+	paintPixel $0 %pointer
+	paintPixel $0 %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 2
+	pushWord %pointer
+	paintPixel $0 %pointer
+	paintPixelLine %light %pointer 13 1
+	paintPixel %shadow  %pointer
+	paintPixel $0 %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 3
+	pushWord %pointer
+	paintPixel %light %pointer
+	paintPixel %light %pointer
+	paintPixel %light %pointer
+	paintPixelLine %cor %pointer 11 1
+	paintPixel %shadow  %pointer
+	paintPixel %shadow  %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 4 to Line 13
+	pushWord %pointer
+	paintPixel %light %pointer
+	paintPixel %light %pointer
+	paintPixelLine %cor %pointer 12 1
+	paintPixel %shadow  %pointer
+	paintPixel %shadow  %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	pushWord %pointer
+	paintPixel %light %pointer
+	paintPixel %light %pointer
+	paintPixelLine %cor %pointer 12 1
+	paintPixel %shadow  %pointer
+	paintPixel %shadow  %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	pushWord %pointer
+	paintPixel %light %pointer
+	paintPixel %light %pointer
+	paintPixelLine %cor %pointer 12 1
+	paintPixel %shadow  %pointer
+	paintPixel %shadow  %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	pushWord %pointer
+	paintPixel %light %pointer
+	paintPixel %light %pointer
+	paintPixelLine %cor %pointer 12 1
+	paintPixel %shadow  %pointer
+	paintPixel %shadow  %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	pushWord %pointer
+	paintPixel %light %pointer
+	paintPixel %light %pointer
+	paintPixelLine %cor %pointer 12 1
+	paintPixel %shadow  %pointer
+	paintPixel %shadow  %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	pushWord %pointer
+	paintPixel %light %pointer
+	paintPixel %light %pointer
+	paintPixelLine %cor %pointer 12 1
+	paintPixel %shadow  %pointer
+	paintPixel %shadow  %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	pushWord %pointer
+	paintPixel %light %pointer
+	paintPixel %light %pointer
+	paintPixelLine %cor %pointer 12 1
+	paintPixel %shadow  %pointer
+	paintPixel %shadow  %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	pushWord %pointer
+	paintPixel %light %pointer
+	paintPixel %light %pointer
+	paintPixelLine %cor %pointer 12 1
+	paintPixel %shadow  %pointer
+	paintPixel %shadow  %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	pushWord %pointer
+	paintPixel %light %pointer
+	paintPixel %light %pointer
+	paintPixelLine %cor %pointer 12 1
+	paintPixel %shadow  %pointer
+	paintPixel %shadow  %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	pushWord %pointer
+	paintPixel %light %pointer
+	paintPixel %light %pointer
+	paintPixelLine %cor %pointer 12 1
+	paintPixel %shadow  %pointer
+	paintPixel %shadow  %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 14
+	pushWord %pointer
+	paintPixel %light %pointer
+	paintPixel %light %pointer
+	paintPixelLine %cor %pointer 11 1
+	paintPixel %shadow  %pointer
+	paintPixel %shadow  %pointer
+	paintPixel %shadow  %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 15
+	pushWord %pointer
+	paintPixel $0 %pointer
+	paintPixel %light %pointer
+	paintPixelLine %shadow %pointer 13 1
+	paintPixel $0 %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	#Line 16
+	pushWord %pointer
+	paintPixel $0 %pointer
+	paintPixel $0 %pointer
+	paintPixelLine %shadow %pointer 12 1
+	paintPixel $0 %pointer
+	paintPixel $0 %pointer
+	popWord %pointer
+	nextPixelLine %pointer 1
+	beq $zero %flag StartPointer
+	nop
+	popWord $v0 #Descarda a posição antiga do ponteiro
+	j return
+	nop
+StartPointer:
+	popWord %pointer #Pointer returns at start position
+	popWord $t1
+popWord $t0
+return:
+
+.end_macro
+
 #Paint a full squareline
 .macro paintFullLine (%cor, %pointer, %flag) #$1: Color to paint; $2: square pointer; $3: '0' returns origal pointer, else returns the finish pointer;
 	pushWord $t0
@@ -4214,21 +4367,26 @@ end:
 .macro moveDown (%pointer) #$1: Pointer to square; $v0: Returns 1 if fails to move down.
 	pushWord $t2
 	pushWord $t3
+	pushWord $t4
 	and $t3 %pointer %pointer #Copy the pointer
 	nextSquareVertical $t3 1
 	isBlockFree $t3
 	beq $v0 $0 fail #Dont Move if space isn't free and returns a msn
 	nop
-	lw $t2 (%pointer) #Get Color
+	lw $t2 8(%pointer) #(2*4) Get Light
+	lw $t3 2104(%pointer) #(16*32*4) + (14*4)Get Dark
+	lw $t4 4112(%pointer) #(16*32*4*2) + (4*4)Get Color
+
 	paintSquare $0 %pointer 0
 	nextSquareVertical %pointer 1
-	paintSquare $t2 %pointer 0
+	paintBlock $t4 $t2 $t3 %pointer 0
 	and $v0 $0 $0 #Set return value to success
 	j end
 	nop
 fail:
 	ori $v0 $0 1
 end:
+	popWord $t4
 	popWord $t3
 	popWord $t2
 .end_macro
@@ -4237,19 +4395,23 @@ end:
 .macro moveRight (%pointer) #$1: Pointer to square;
 	pushWord $t2
 	pushWord $t3
+	pushWord $t4
 
 	and $t3 %pointer %pointer #Copy the pointer
 	nextSquareHorizontal $t3 1
 	isBlockFree $t3
 	beq $v0 $0 end #Dont Move if space isn't free
 	nop
+	lw $t2 8(%pointer) #(2*4) Get Light
+	lw $t3 2104(%pointer) #(16*32*4) + (14*4)Get Dark
+	lw $t4 4108(%pointer) #(16*32*4*2) + (3*4)Get Color
 
-	lw $t2 (%pointer) #Get Color
 	paintSquare $0 %pointer 0
 	nextSquareHorizontal %pointer 1
-	paintSquare $t2 %pointer 0
+	paintBlock $t4 $t2 $t3 %pointer 0
 
 end:
+	popWord $t4
 	popWord $t3
 	popWord $t2
 .end_macro
@@ -4258,19 +4420,23 @@ end:
 .macro moveLeft (%pointer) #$1: Pointer to square;
 	pushWord $t2
 	pushWord $t3
+	pushWord $t4
 
 	and $t3 %pointer %pointer #Copy the pointer
 	previousSquareHorizontal $t3 1
 	isBlockFree $t3
 	beq $v0 $0 end #Dont Move if space isn't free
 	nop
+	lw $t2 8(%pointer) #(2*4) Get Light
+	lw $t3 2104(%pointer) #(16*32*4) + (14*4)Get Dark
+	lw $t4 4108(%pointer) #(16*32*4*2) + (3*4)Get Color
 
-	lw $t2 (%pointer) #Get color
 	paintSquare $0 %pointer 0
 	previousSquareHorizontal %pointer 1
-	paintSquare $t2 %pointer 0
+	paintBlock $t4 $t2 $t3 %pointer 0
 
 end:
+	popWord $t4
 	popWord $t3
 	popWord $t2
 .end_macro
@@ -4286,13 +4452,14 @@ end:
 	and $s3 $v0 $v0 #Lines Box Pointer
 
 	and $s1 $gp $gp #Pointer to block
-	ori $s0 $0 0xb21030 #Color to the block
+	ori $s0 $0 0x51a200 #Color to the block
+	ori $s4 $0 0x9aeb00 #Light to the block
+	ori $s5 $0 0x386900 #Shadow to the block
 	nextSquareVertical $s1 1
 	nextSquareHorizontal $s1 9
-	paintSquare $s0 $s1 0
+	paintBlock $s0 $s4 $s5 $s1 0
 
-	and $a0 $s0 $s0
-	and $a1 $s1 $s1
+	and $a0 $s1 $s1
 	jal MovePiece
 	nop
 	ori $v0 $0 0xA
@@ -4302,7 +4469,6 @@ end:
 	MovePiece:
 		startFila
 		and $t0 $0 $0
-		paintSquare $a0 $a1 0
 
 	loop:
 		salvarMovimento
@@ -4310,14 +4476,14 @@ end:
 		beq $t0 9999 autoMove #Time to move
 		nop
 		salvarMovimento
-		mover $a1
+		mover $a0
 		salvarMovimento
 		j loop
 		nop
 	autoMove:
 		salvarMovimento
 		add $t0 $0 $0
-		moveDown $a1
+		moveDown $a0
 		salvarMovimento
 		bne $v0 $0 stop	# if $v0 != 0 then
 		nop
