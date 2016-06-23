@@ -36,30 +36,30 @@
 .end_macro
 
 #Saves data to the FIFO List
-.macro pushFWord (%dado) #$1: Data to be saved;
-	addi $t8 $t8 4
-	sw %dado ($t8)
+.macro pushFByte (%dado) #$1: Data to be saved;
+	addi $t8 $t8 1
+	sb %dado ($t8)
 .end_macro
 
 #Get a data from the FIFO List
-.macro popFWord (%dado) #$s1 recives the data
+.macro popFByte (%dado) #$s1 recives the data
 	isFEmpty
 	beq $v0 $0 return #Does nothing if FIFO List is empty
 	nop
-	lw %dado 4($t7)
+	lb %dado 1($t7)
 	pushWord $t0
 	pushWord %dado
 	pushWord $t7 #Saves the pointer
 loopPopF: #loop to move the elements in the FIFO List
-	lw $t0 8($t7) #Get Next Value
-	sw $t0 4($t7) #Store here
-	addi $t7 $t7 4
+	lb $t0 2($t7) #Get Next Value
+	sb $t0 1($t7) #Store here
+	addi $t7 $t7 1
 	blt $t7 $t8 loopPopF
 	nop
 	popWord $t7
 	popWord %dado
 	popWord $t0
-	addi $t8 $t8 -4 #Updates the last FIFO List position
+	addi $t8 $t8 -1 #Updates the last FIFO List position
 	return:
 .end_macro
 
@@ -343,10 +343,7 @@ return:
 	nop
 StartPointer:
 	popWord %pointer #Pointer returns at start position
-	popWord $t1
-popWord $t0
 return:
-
 .end_macro
 
 #Paint a full squareline
@@ -4315,7 +4312,7 @@ loopNextBlock:
 	j end #Invalid key
 	nop
 store:
-	pushFWord $t2 #Sends movement to the FIFO List
+	pushFByte $t2 #Sends movement to the FIFO List
 	j end
 	nop
 end:
@@ -4330,7 +4327,7 @@ end:
 	ori $v0 $0 1 #Set return to fail to be changed if the piece is moved
 	beq $t2 $0 end #Jump if there is no moviment in FIFO List
 	nop
-	popFWord $t2 #Get move from the FIFO List
+	popFByte $t2 #Get move from the FIFO List
 	beq $t2 0x57 Spin #If read 'W'
 	nop
 	beq $t2 0x77 Spin #If read 'w'
@@ -4353,17 +4350,17 @@ Spin:
 	nop
 Left:
 	moveLeft %p1 %p2 %p3 %p4
-	and $v0 $0 $0 #Set return falg to indicates move made
+	#and $v0 $0 $0 #Set return falg to indicates move made
 	j end
 	nop
 Right:
 	moveDown %p1 %p2 %p3 %p4
-	and $v0 $0 $0 #Set return falg to indicates move made
+	#and $v0 $0 $0 #Set return falg to indicates move made
 	j end
 	nop
 SoftDrop:
 	moveRight %p1 %p2 %p3 %p4
-	and $v0 $0 $0 #Set return falg to indicates move made
+	#and $v0 $0 $0 #Set return falg to indicates move made
 #	j end #No need for this Jump
 # nop
 
@@ -4544,7 +4541,7 @@ end:
 	jal printBaseInterface
 	nop
 	and $s2 $v0 $v0 #Score Box Pointer
-	and $s3 $v0 $v0 #Lines Box Pointer
+	and $s3 $v1 $v1 #Lines Box Pointer
 
 	and $s1 $gp $gp #Pointer to block
 	ori $s0 $0 0x51a200 #Color to the block
@@ -4586,9 +4583,9 @@ end:
 		salvarMovimento
 		mover $a0 $a1 $a2 $a3
 		#salvarMovimento
-		beq $v0 1 loop
+		beq $v0 1 loop #If no move was made jump
 		nop
-		addi $t0 $t0 3999
+		addi $t0 $t0 9999 #If move was made increment to drop a little faster
 		j loop
 		nop
 	autoMove:
