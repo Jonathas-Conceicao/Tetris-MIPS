@@ -25,14 +25,6 @@
 #Teste of if FIFO List is empty
 .macro isFEmpty #$v0: Returns 0 if FIFO List is empty and 1 otherwise;
 	sne $v0 $t8 0x10000000
-# beq $t8 0x10000000 empty
-# 	nop
-# 	ori $v0 $0 0x1
-# 	j end
-# 	nop
-# empty:
-# 	and $v0 $0 $0
-# end:
 .end_macro
 
 #Saves data to the FIFO List
@@ -44,7 +36,7 @@
 #Get a data from the FIFO List
 .macro popFByte (%dado) #$s1 recives the data
 	isFEmpty
-	beq $v0 $0 return #Does nothing if FIFO List is empty
+	beq $v0 $0 end #Does nothing if FIFO List is empty
 	nop
 	lb %dado 1($t7)
 	pushWord $t0
@@ -60,7 +52,7 @@ loopPopF: #loop to move the elements in the FIFO List
 	popWord %dado
 	popWord $t0
 	addi $t8 $t8 -1 #Updates the last FIFO List position
-	return:
+	end:
 .end_macro
 
 ##############################
@@ -152,12 +144,12 @@ loopLinha:
 	nop
 	popWord $t0 #Descarda a posição antiga do ponteiro
 	popWord $t0
-	j return
+	j end
 	nop
 StartPointer:
 	popWord %pointer #Pointer returns at start position
 	popWord $t0
-return:
+end:
 .end_macro
 
 ###################################
@@ -187,13 +179,13 @@ loopLinha:
 	popWord $t1 #Descarda a posição antiga do ponteiro
 	popWord $t1
 	popWord $t0
-	j return
+	j end
 	nop
 StartPointer:
 	popWord %pointer #Pointer returns at start position
 	popWord $t1
 	popWord $t0
-return:
+end:
 .end_macro
 
 #Paints a block of the game
@@ -339,11 +331,11 @@ return:
 	beq $zero %flag StartPointer
 	nop
 	popWord $v0 #Descarda a posição antiga do ponteiro
-	j return
+	j end
 	nop
 StartPointer:
 	popWord %pointer #Pointer returns at start position
-return:
+end:
 .end_macro
 
 #Paint a full squareline
@@ -361,12 +353,12 @@ loopLinha:
 	nop
 	popWord $t0 #Descarda a posição antiga do ponteiro
 	popWord $t0
-	j return
+	j end
 	nop
 StartPointer:
 	popWord %pointer #Pointer returns at start position
 	popWord $t0
-return:
+end:
 .end_macro
 
 #Paint a line of 'n' squares
@@ -384,12 +376,12 @@ loopLine:
 	nop
 	popWord $t0 #Descarda a posição antiga do ponteiro
 	popWord $t0
-	j return
+	j end
 	nop
 StartPointer:
 	popWord %pointer #Pointer returns at start position
 	popWord $t0
-return:
+end:
 .end_macro
 
 #This is some magic that's necessary so things wouldn't fall apart
@@ -410,12 +402,12 @@ loopColuna:
 	nop
 	popWord $t0 #Descarda a posição antiga do ponteiro
 	popWord $t0
-	j return
+	j end
 	nop
 StartPointer:
 	popWord %pointer #Pointer returns at start position
 	popWord $t0
-return:
+end:
 .end_macro
 
 ########################
@@ -564,13 +556,13 @@ return:
 	popWord $t3 #Descarda a posição antiga do ponteiro
 	popWord $t3
 	popWord $t2
-	j return
+	j end
 	nop
 StartPointer:
 	popWord %pointer #Pointer returns at start position
 	popWord $t3
 	popWord $t2
-return:
+end:
 .end_macro
 
 #Paint a white one with a black background
@@ -700,13 +692,13 @@ return:
 	popWord $t3 #Descarda a posição antiga do ponteiro
 	popWord $t3
 	popWord $t2
-	j return
+	j end
 	nop
 StartPointer:
 	popWord %pointer #Pointer returns at start position
 	popWord $t3
 	popWord $t2
-return:
+end:
 .end_macro
 
 #Paint a white one with a black background
@@ -841,13 +833,13 @@ return:
 	popWord $t3 #Descarda a posição antiga do ponteiro
 	popWord $t3
 	popWord $t2
-	j return
+	j end
 	nop
 StartPointer:
 	popWord %pointer #Pointer returns at start position
 	popWord $t3
 	popWord $t2
-return:
+end:
 .end_macro
 
 #Paint a white three with a black background
@@ -981,13 +973,13 @@ return:
 	popWord $t3 #Descarda a posição antiga do ponteiro
 	popWord $t3
 	popWord $t2
-	j return
+	j end
 	nop
 StartPointer:
 	popWord %pointer #Pointer returns at start position
 	popWord $t3
 	popWord $t2
-return:
+end:
 .end_macro
 
 #Paint a white four with a black background
@@ -1125,13 +1117,13 @@ return:
 	popWord $t3 #Descarda a posição antiga do ponteiro
 	popWord $t3
 	popWord $t2
-	j return
+	j end
 	nop
 StartPointer:
 	popWord %pointer #Pointer returns at start position
 	popWord $t3
 	popWord $t2
-return:
+end:
 .end_macro
 
 #Paint a white five with a black background
@@ -1255,13 +1247,13 @@ return:
 	popWord $t3 #Descarda a posição antiga do ponteiro
 	popWord $t3
 	popWord $t2
-	j return
+	j end
 	nop
 StartPointer:
 	popWord %pointer #Pointer returns at start position
 	popWord $t3
 	popWord $t2
-return:
+end:
 .end_macro
 
 #Paint a white six with a black background
@@ -1401,13 +1393,13 @@ return:
 	popWord $t3 #Descarda a posição antiga do ponteiro
 	popWord $t3
 	popWord $t2
-	j return
+	j end
 	nop
 StartPointer:
 	popWord %pointer #Pointer returns at start position
 	popWord $t3
 	popWord $t2
-return:
+end:
 .end_macro
 
 #Paint a white seven with a black background
@@ -1530,13 +1522,13 @@ return:
 	popWord $t3 #Descarda a posição antiga do ponteiro
 	popWord $t3
 	popWord $t2
-	j return
+	j end
 	nop
 StartPointer:
 	popWord %pointer #Pointer returns at start position
 	popWord $t3
 	popWord $t2
-return:
+end:
 .end_macro
 
 #Paint a white eight with a black background
@@ -1679,13 +1671,13 @@ return:
 	popWord $t3 #Descarda a posição antiga do ponteiro
 	popWord $t3
 	popWord $t2
-	j return
+	j end
 	nop
 StartPointer:
 	popWord %pointer #Pointer returns at start position
 	popWord $t3
 	popWord $t2
-return:
+end:
 .end_macro
 
 #Paint a white nine with a black background
@@ -1828,13 +1820,13 @@ return:
 	popWord $t3 #Descarda a posição antiga do ponteiro
 	popWord $t3
 	popWord $t2
-	j return
+	j end
 	nop
 StartPointer:
 	popWord %pointer #Pointer returns at start position
 	popWord $t3
 	popWord $t2
-return:
+end:
 .end_macro
 
 ####################
@@ -4279,10 +4271,10 @@ loopNextBlock:
 #####################
 
 #Testes if a block can be moved to that space
-.macro isBlockFree (%pointer) #$1: Pointer of block to be tested; $v0: Returns 1 if empty, otherwise returns 0
+.macro isBlockFree (%pointer) #$1: Pointer of block to be tested; $v0: Returns 0 if empty, otherwise returns 1
 	pushWord $t0
 	lw $t0 8(%pointer)
-	seq $v0 $t0 $0 #If $t0 == $0 then $v0 = 1, else $v0 = 0
+	sne $v0 $t0 $0 #If $t0 == $0 then $v0 = 0, else $v0 = 1
 	popWord $t0
 .end_macro
 
@@ -4376,53 +4368,53 @@ end:
 
 	and $t3 %p1 %p1 #Copy the pointer
 	nextSquareVertical $t3 1
-	isBlockFree $t3
+	isBlockFree $t3 #Returns 0 if block is free
 	beq $t3 %p2 test2 #A piece can't be traped but itself
 	nop
 	beq $t3 %p3 test2 #A piece can't be traped but itself
 	nop
 	beq $t3 %p4 test2 #A piece can't be traped but itself
 	nop
-	beq $v0 $0 fail #Dont Move if space isn't free and returns a flag
+	bne $v0 $0 fail #Dont Move if space isn't free and returns a flag
 	nop
 
 	test2:
 	and $t3 %p2 %p2 #Copy the pointer
 	nextSquareVertical $t3 1
-	isBlockFree $t3
+	isBlockFree $t3 #Returns 0 if block is free
 	beq $t3 %p1 test3 #A piece can't be traped but itself
 	nop
 	beq $t3 %p3 test3 #A piece can't be traped but itself
 	nop
 	beq $t3 %p4 test3 #A piece can't be traped but itself
 	nop
-	beq $v0 $0 fail #Dont Move if space isn't free and returns a flag
+	bne $v0 $0 fail #Dont Move if space isn't free and returns a flag
 	nop
 
 	test3:
 	and $t3 %p3 %p3 #Copy the pointer
 	nextSquareVertical $t3 1
-	isBlockFree $t3
+	isBlockFree $t3 #Returns 0 if block is free
 	beq $t3 %p1 test4 #A piece can't be traped but itself
 	nop
 	beq $t3 %p2 test4 #A piece can't be traped but itself
 	nop
 	beq $t3 %p4 test4 #A piece can't be traped but itself
 	nop
-	beq $v0 $0 fail #Dont Move if space isn't free and returns a flag
+	bne $v0 $0 fail #Dont Move if space isn't free and returns a flag
 	nop
 
 	test4:
 	and $t3 %p4 %p4 #Copy the pointer
 	nextSquareVertical $t3 1
-	isBlockFree $t3
+	isBlockFree $t3 #Returns 0 if block is free
 	beq $t3 %p1 outTests #A piece can't be traped but itself
 	nop
 	beq $t3 %p2 outTests #A piece can't be traped but itself
 	nop
 	beq $t3 %p3 outTests #A piece can't be traped but itself
 	nop
-	beq $v0 $0 fail #Dont Move if space isn't free and returns a flag
+	bne $v0 $0 fail #Dont Move if space isn't free and returns a flag
 	nop
 
 	outTests:
@@ -4462,54 +4454,54 @@ end:
 
 	and $t3 %p1 %p1 #Copy the pointer
 	nextSquareHorizontal $t3 1
-	isBlockFree $t3
+	isBlockFree $t3 #Returns 0 if block is free
 	beq $t3 %p2 test2 #A piece can't be traped but itself
 	nop
 	beq $t3 %p3 test2 #A piece can't be traped but itself
 	nop
 	beq $t3 %p4 test2 #A piece can't be traped but itself
 	nop
-	beq $v0 $0 fail #Dont Move if space isn't free
+	bne $v0 $0 fail #Dont Move if space isn't free
 	nop
 
 	test2:
 	and $t3 %p2 %p2 #Copy the pointer
 	nextSquareHorizontal $t3 1
-	isBlockFree $t3
+	isBlockFree $t3 #Returns 0 if block is free
 	beq $t3 %p1 test3 #A piece can't be traped but itself
 	nop
 	beq $t3 %p3 test3 #A piece can't be traped but itself
 	nop
 	beq $t3 %p4 test3 #A piece can't be traped but itself
 	nop
-	beq $v0 $0 fail #Dont Move if space isn't free
+	bne $v0 $0 fail #Dont Move if space isn't free
 	nop
 
 	test3:
 	and $t3 %p3 %p3 #Copy the pointer
 	nextSquareHorizontal $t3 1
-	isBlockFree $t3
+	isBlockFree $t3 #Returns 0 if block is free
 	beq $t3 %p1 test4 #A piece can't be traped but itself
 	nop
 	beq $t3 %p2 test4 #A piece can't be traped but itself
 	nop
 	beq $t3 %p4 test4 #A piece can't be traped but itself
 	nop
-	beq $v0 $0 fail #Dont Move if space isn't free
+	bne $v0 $0 fail #Dont Move if space isn't free
 	nop
 
 
 	test4:
 	and $t3 %p4 %p4 #Copy the pointer
 	nextSquareHorizontal $t3 1
-	isBlockFree $t3
+	isBlockFree $t3 #Returns 0 if block is free
 	beq $t3 %p1 outTests #A piece can't be traped but itself
 	nop
 	beq $t3 %p2 outTests #A piece can't be traped but itself
 	nop
 	beq $t3 %p3 outTests #A piece can't be traped but itself
 	nop
-	beq $v0 $0 fail #Dont Move if space isn't free
+	bne $v0 $0 fail #Dont Move if space isn't free
 	nop
 
 	outTests:
@@ -4549,53 +4541,53 @@ end:
 
 	and $t3 %p1 %p1 #Copy the pointer
 	previousSquareHorizontal $t3 1
-	isBlockFree $t3
+	isBlockFree $t3 #Returns 0 if block is free
 	beq $t3 %p2 test2 #A piece can't be traped but itself
 	nop
 	beq $t3 %p3 test2 #A piece can't be traped but itself
 	nop
 	beq $t3 %p4 test2 #A piece can't be traped but itself
 	nop
-	beq $v0 $0 fail #Dont Move if space isn't free
+	bne $v0 $0 fail #Dont Move if space isn't free
 	nop
 
 	test2:
 	and $t3 %p2 %p2 #Copy the pointer
 	previousSquareHorizontal $t3 1
-	isBlockFree $t3
+	isBlockFree $t3 #Returns 0 if block is free
 	beq $t3 %p1 test3 #A piece can't be traped but itself
 	nop
 	beq $t3 %p3 test3 #A piece can't be traped but itself
 	nop
 	beq $t3 %p4 test3 #A piece can't be traped but itself
 	nop
-	beq $v0 $0 fail #Dont Move if space isn't free
+	bne $v0 $0 fail #Dont Move if space isn't free
 	nop
 
 	test3:
 	and $t3 %p3 %p3 #Copy the pointer
 	previousSquareHorizontal $t3 1
-	isBlockFree $t3
+	isBlockFree $t3 #Returns 0 if block is free
 	beq $t3 %p1 test4 #A piece can't be traped but itself
 	nop
 	beq $t3 %p2 test4 #A piece can't be traped but itself
 	nop
 	beq $t3 %p4 test4 #A piece can't be traped but itself
 	nop
-	beq $v0 $0 fail #Dont Move if space isn't free
+	bne $v0 $0 fail #Dont Move if space isn't free
 	nop
 
 	test4:
 	and $t3 %p4 %p4 #Copy the pointer
 	previousSquareHorizontal $t3 1
-	isBlockFree $t3
+	isBlockFree $t3 #Returns 0 if block is free
 	beq $t3 %p1 endTestes #A piece can't be traped but itself
 	nop
 	beq $t3 %p2 endTestes #A piece can't be traped but itself
 	nop
 	beq $t3 %p3 endTestes #A piece can't be traped but itself
 	nop
-	beq $v0 $0 fail #Dont Move if space isn't free
+	bne $v0 $0 fail #Dont Move if space isn't free
 	nop
 
 	endTestes:
@@ -4656,17 +4648,17 @@ end:
 	and %p4 %p2 %p2
 	nextSquareHorizontal %p4 1 #Set %p4
 
-	isBlockFree %p1 #Returns 0 if block isn't free for moving
-	beq $v0 $0 end
+	isBlockFree %p1 #Returns 1 if block isn't free for moving
+	bne $v0 $0 end
 	nop
-	isBlockFree %p2 #Returns 0 if block isn't free for moving
-	beq $v0 $0 end
+	isBlockFree %p2 #Returns 1 if block isn't free for moving
+	bne $v0 $0 end
 	nop
-	isBlockFree %p3 #Returns 0 if block isn't free for moving
-	beq $v0 $0 end
+	isBlockFree %p3 #Returns 1 if block isn't free for moving
+	bne $v0 $0 end
 	nop
-	isBlockFree %p4 #Returns 0 if block isn't free for moving
-	beq $v0 $0 end
+	isBlockFree %p4 #Returns 1 if block isn't free for moving
+	bne $v0 $0 end
 	nop
 
 	paintBlock $t2 $t3 $t4 %p1 0
@@ -4681,7 +4673,7 @@ end:
 .end_macro
 
 #Paint a purple Piece based on %p1 position and set the 4 arguments to the 4 squares
-#Returns 0 if fail to create
+#Returns 1 if fail to create
 .macro purplePiece (%p1, %p2, %p3, %p4) #$1 - 4: Pointers to the piece;
 	pushWord $t2
 	pushWord $t3
@@ -4705,17 +4697,17 @@ end:
 	and %p4 %p3 %p3
 	nextSquareVertical %p4 1 #Set %p4
 
-	isBlockFree %p1 #Returns 0 if block isn't free for moving
-	beq $v0 $0 end
+	isBlockFree %p1 #Returns 1 if block isn't free for moving
+	bne $v0 $0 end
 	nop
-	isBlockFree %p2 #Returns 0 if block isn't free for moving
-	beq $v0 $0 end
+	isBlockFree %p2 #Returns 1 if block isn't free for moving
+	bne $v0 $0 end
 	nop
-	isBlockFree %p3 #Returns 0 if block isn't free for moving
-	beq $v0 $0 end
+	isBlockFree %p3 #Returns 1 if block isn't free for moving
+	bne $v0 $0 end
 	nop
-	isBlockFree %p4 #Returns 0 if block isn't free for moving
-	beq $v0 $0 end
+	isBlockFree %p4 #Returns 1 if block isn't free for moving
+	bne $v0 $0 end
 	nop
 
 	paintBlock $t2 $t3 $t4 %p1 0
@@ -4754,17 +4746,17 @@ end:
 	and %p4 %p3 %p3
 	nextSquareHorizontal %p4 1 #Set %p4
 
-	isBlockFree %p1 #Returns 0 if block isn't free for moving
-	beq $v0 $0 end
+	isBlockFree %p1 #Returns 1 if block isn't free for moving
+	bne $v0 $0 end
 	nop
-	isBlockFree %p2 #Returns 0 if block isn't free for moving
-	beq $v0 $0 end
+	isBlockFree %p2 #Returns 1 if block isn't free for moving
+	bne $v0 $0 end
 	nop
-	isBlockFree %p3 #Returns 0 if block isn't free for moving
-	beq $v0 $0 end
+	isBlockFree %p3 #Returns 1 if block isn't free for moving
+	bne $v0 $0 end
 	nop
-	isBlockFree %p4 #Returns 0 if block isn't free for moving
-	beq $v0 $0 end
+	isBlockFree %p4 #Returns 1 if block isn't free for moving
+	bne $v0 $0 end
 	nop
 
 	paintBlock $t2 $t3 $t4 %p1 0
@@ -4803,17 +4795,17 @@ end:
 	and %p4 %p3 %p3
 	previousSquareHorizontal %p4 1 #Set %p4
 
-	isBlockFree %p1 #Returns 0 if block isn't free for moving
-	beq $v0 $0 end
+	isBlockFree %p1 #Returns 1 if block isn't free for moving
+	bne $v0 $0 end
 	nop
-	isBlockFree %p2 #Returns 0 if block isn't free for moving
-	beq $v0 $0 end
+	isBlockFree %p2 #Returns 1 if block isn't free for moving
+	bne $v0 $0 end
 	nop
-	isBlockFree %p3 #Returns 0 if block isn't free for moving
-	beq $v0 $0 end
+	isBlockFree %p3 #Returns 1 if block isn't free for moving
+	bne $v0 $0 end
 	nop
-	isBlockFree %p4 #Returns 0 if block isn't free for moving
-	beq $v0 $0 end
+	isBlockFree %p4 #Returns 1 if block isn't free for moving
+	bne $v0 $0 end
 	nop
 
 	paintBlock $t2 $t3 $t4 %p1 0
@@ -4852,17 +4844,17 @@ end:
 	and %p4 %p3 %p3
 	nextSquareHorizontal %p4 1 #Set %p4
 
-	isBlockFree %p1 #Returns 0 if block isn't free for moving
-	beq $v0 $0 end
+	isBlockFree %p1 #Returns 1 if block isn't free for moving
+	bne $v0 $0 end
 	nop
-	isBlockFree %p2 #Returns 0 if block isn't free for moving
-	beq $v0 $0 end
+	isBlockFree %p2 #Returns 1 if block isn't free for moving
+	bne $v0 $0 end
 	nop
-	isBlockFree %p3 #Returns 0 if block isn't free for moving
-	beq $v0 $0 end
+	isBlockFree %p3 #Returns 1 if block isn't free for moving
+	bne $v0 $0 end
 	nop
-	isBlockFree %p4 #Returns 0 if block isn't free for moving
-	beq $v0 $0 end
+	isBlockFree %p4 #Returns 1 if block isn't free for moving
+	bne $v0 $0 end
 	nop
 
 	paintBlock $t2 $t3 $t4 %p1 0
@@ -4901,17 +4893,17 @@ end:
 	and %p4 %p3 %p3
 	nextSquareHorizontal %p4 1 #Set %p4
 
-	isBlockFree %p1 #Returns 0 if block isn't free for moving
-	beq $v0 $0 end
+	isBlockFree %p1 #Returns 1 if block isn't free for moving
+	bne $v0 $0 end
 	nop
-	isBlockFree %p2 #Returns 0 if block isn't free for moving
-	beq $v0 $0 end
+	isBlockFree %p2 #Returns 1 if block isn't free for moving
+	bne $v0 $0 end
 	nop
-	isBlockFree %p3 #Returns 0 if block isn't free for moving
-	beq $v0 $0 end
+	isBlockFree %p3 #Returns 1 if block isn't free for moving
+	bne $v0 $0 end
 	nop
-	isBlockFree %p4 #Returns 0 if block isn't free for moving
-	beq $v0 $0 end
+	isBlockFree %p4 #Returns 1 if block isn't free for moving
+	bne $v0 $0 end
 	nop
 
 	paintBlock $t2 $t3 $t4 %p1 0
@@ -4950,17 +4942,17 @@ end:
 	and %p4 %p3 %p3
 	previousSquareHorizontal %p4 1 #Set %p4
 
-	isBlockFree %p1 #Returns 0 if block isn't free for moving
-	beq $v0 $0 end
+	isBlockFree %p1 #Returns 1 if block isn't free for moving
+	bne $v0 $0 end
 	nop
-	isBlockFree %p2 #Returns 0 if block isn't free for moving
-	beq $v0 $0 end
+	isBlockFree %p2 #Returns 1 if block isn't free for moving
+	bne $v0 $0 end
 	nop
-	isBlockFree %p3 #Returns 0 if block isn't free for moving
-	beq $v0 $0 end
+	isBlockFree %p3 #Returns 1 if block isn't free for moving
+	bne $v0 $0 end
 	nop
-	isBlockFree %p4 #Returns 0 if block isn't free for moving
-	beq $v0 $0 end
+	isBlockFree %p4 #Returns 1 if block isn't free for moving
+	bne $v0 $0 end
 	nop
 
 	paintBlock $t2 $t3 $t4 %p1 0
@@ -4989,36 +4981,34 @@ main:
 	nextSquareVertical $s1 1
 	nextSquareHorizontal $s1 9 #Set position of inicial block
 
-playLoop:
-	and $a0 $s1 $s1 #Pointer to piece Start
-	ori $v0 $0 1
-	jal GeneratePiece
-	nop
-	beq $v0 $0 gameOver
-	nop
+	playLoop:
+		and $a0 $s1 $s1 #Pointer to piece Start
+		ori $v0 $0 1
+		jal GeneratePiece
+		nop
+		beq $v0 1 gameOver #End the game if fails to generate new piece
+		nop
 
-	jal MovePiece
-	nop
+		jal MovePiece
+		nop
 
-	j playLoop
-	nop
-gameOver:
-	ori $v0 $0 0xA
-	syscall #End the game
+		j playLoop
+		nop
+	gameOver:
+		ori $v0 $0 0xA
+		syscall #End the game
 
 #Subrotine to generate a random piece
 #Takes $a0 as argument to creat a piece at that point
 #Returns 4 pointers in $a0 to $a3 to the piece
-#Returns 0 at $v0 if fail to creat a piece
+#Returns 1 at $v0 if fail to creat a piece
 	GeneratePiece:
 		pushWord $t0
 		pushWord $a0
-		ori $v0 $0 42 #Code to random number from range
+		ori $v0 $0 41 #Code to random number
 		ori $t0 $0 7
-		ori $a0 $0 1 #set Lower Value
-		ori $a1 $0 9999 #Set Highter Value
 		syscall #Generates a random number and saves on $a0
-		div $a0 $t0 #Mod 7
+		divu $a0 $t0 #Mod 7 and loses the sing
 		mfhi $t0
 		popWord $a0
 
