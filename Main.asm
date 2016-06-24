@@ -4944,7 +4944,7 @@ end:
 
 	#Set %p3
 	and %p3 %p1 %p1
-	previousSquareVertical %p3 1 #Set %p3
+	nextSquareVertical %p3 1 #Set %p3
 
 	#Set %p3
 	and %p4 %p3 %p3
