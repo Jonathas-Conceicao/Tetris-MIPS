@@ -4484,7 +4484,7 @@ end:
 	nop
 	beq $v0 $0 fail #Dont Move if space isn't free
 	nop
-	
+
 	test3:
 	and $t3 %p3 %p3 #Copy the pointer
 	nextSquareHorizontal $t3 1
@@ -4497,8 +4497,8 @@ end:
 	nop
 	beq $v0 $0 fail #Dont Move if space isn't free
 	nop
-	
-	
+
+
 	test4:
 	and $t3 %p4 %p4 #Copy the pointer
 	nextSquareHorizontal $t3 1
@@ -4681,7 +4681,7 @@ end:
 .end_macro
 
 #Paint a purple Piece based on %p1 position and set the 4 arguments to the 4 squares
-#Returns 1 if fail to create
+#Returns 0 if fail to create
 .macro purplePiece (%p1, %p2, %p3, %p4) #$1 - 4: Pointers to the piece;
 	pushWord $t2
 	pushWord $t3
@@ -4991,7 +4991,10 @@ main:
 
 playLoop:
 	and $a0 $s1 $s1 #Pointer to piece Start
+	ori $v0 $0 1
 	jal GeneratePiece
+	nop
+	beq $v0 $0 gameOver
 	nop
 
 	jal MovePiece
@@ -4999,13 +5002,14 @@ playLoop:
 
 	j playLoop
 	nop
-
+gameOver:
 	ori $v0 $0 0xA
 	syscall #End the game
 
 #Subrotine to generate a random piece
 #Takes $a0 as argument to creat a piece at that point
 #Returns 4 pointers in $a0 to $a3 to the piece
+#Returns 0 at $v0 if fail to creat a piece
 	GeneratePiece:
 		pushWord $t0
 		pushWord $a0
