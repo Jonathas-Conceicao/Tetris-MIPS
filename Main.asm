@@ -4390,6 +4390,8 @@ end:
 	and $t3 %p2 %p2 #Copy the pointer
 	nextSquareVertical $t3 1
 	isBlockFree $t3
+	beq $t3 %p1 test3 #A piece can't be traped but itself
+	nop
 	beq $t3 %p3 test3 #A piece can't be traped but itself
 	nop
 	beq $t3 %p4 test3 #A piece can't be traped but itself
@@ -4401,6 +4403,10 @@ end:
 	and $t3 %p3 %p3 #Copy the pointer
 	nextSquareVertical $t3 1
 	isBlockFree $t3
+	beq $t3 %p1 test4 #A piece can't be traped but itself
+	nop
+	beq $t3 %p2 test4 #A piece can't be traped but itself
+	nop
 	beq $t3 %p4 test4 #A piece can't be traped but itself
 	nop
 	beq $v0 $0 fail #Dont Move if space isn't free and returns a flag
@@ -4410,9 +4416,16 @@ end:
 	and $t3 %p4 %p4 #Copy the pointer
 	nextSquareVertical $t3 1
 	isBlockFree $t3
+	beq $t3 %p1 outTests #A piece can't be traped but itself
+	nop
+	beq $t3 %p2 outTests #A piece can't be traped but itself
+	nop
+	beq $t3 %p3 outTests #A piece can't be traped but itself
+	nop
 	beq $v0 $0 fail #Dont Move if space isn't free and returns a flag
 	nop
 
+	outTests:
 	lw $t2 8(%p1) #(2*4) Get Light
 	lw $t3 2104(%p1) #(16*32*4) + (14*4)Get Dark
 	lw $t4 4112(%p1) #(16*32*4*2) + (4*4)Get Color
@@ -4450,24 +4463,56 @@ end:
 	and $t3 %p1 %p1 #Copy the pointer
 	nextSquareHorizontal $t3 1
 	isBlockFree $t3
-	beq $v0 $0 fail #Dont Move if space isn't free
+	beq $t3 %p2 test2 #A piece can't be traped but itself
 	nop
-	and $t3 %p2 %p2 #Copy the pointer
-	nextSquareHorizontal $t3 1
-	isBlockFree $t3
-	beq $v0 $0 fail #Dont Move if space isn't free
+	beq $t3 %p3 test2 #A piece can't be traped but itself
 	nop
-	and $t3 %p3 %p3 #Copy the pointer
-	nextSquareHorizontal $t3 1
-	isBlockFree $t3
-	beq $v0 $0 fail #Dont Move if space isn't free
+	beq $t3 %p4 test2 #A piece can't be traped but itself
 	nop
-	and $t3 %p4 %p4 #Copy the pointer
-	nextSquareHorizontal $t3 1
-	isBlockFree $t3
 	beq $v0 $0 fail #Dont Move if space isn't free
 	nop
 
+	test2:
+	and $t3 %p2 %p2 #Copy the pointer
+	nextSquareHorizontal $t3 1
+	isBlockFree $t3
+	beq $t3 %p1 test3 #A piece can't be traped but itself
+	nop
+	beq $t3 %p3 test3 #A piece can't be traped but itself
+	nop
+	beq $t3 %p4 test3 #A piece can't be traped but itself
+	nop
+	beq $v0 $0 fail #Dont Move if space isn't free
+	nop
+	
+	test3:
+	and $t3 %p3 %p3 #Copy the pointer
+	nextSquareHorizontal $t3 1
+	isBlockFree $t3
+	beq $t3 %p1 test4 #A piece can't be traped but itself
+	nop
+	beq $t3 %p2 test4 #A piece can't be traped but itself
+	nop
+	beq $t3 %p4 test4 #A piece can't be traped but itself
+	nop
+	beq $v0 $0 fail #Dont Move if space isn't free
+	nop
+	
+	
+	test4:
+	and $t3 %p4 %p4 #Copy the pointer
+	nextSquareHorizontal $t3 1
+	isBlockFree $t3
+	beq $t3 %p1 outTests #A piece can't be traped but itself
+	nop
+	beq $t3 %p2 outTests #A piece can't be traped but itself
+	nop
+	beq $t3 %p3 outTests #A piece can't be traped but itself
+	nop
+	beq $v0 $0 fail #Dont Move if space isn't free
+	nop
+
+	outTests:
 	lw $t2 8(%p1) #(2*4) Get Light
 	lw $t3 2104(%p1) #(16*32*4) + (14*4)Get Dark
 	lw $t4 4112(%p1) #(16*32*4*2) + (4*4)Get Color
@@ -4505,24 +4550,55 @@ end:
 	and $t3 %p1 %p1 #Copy the pointer
 	previousSquareHorizontal $t3 1
 	isBlockFree $t3
-	beq $v0 $0 fail #Dont Move if space isn't free
+	beq $t3 %p2 test2 #A piece can't be traped but itself
 	nop
-	and $t3 %p2 %p2 #Copy the pointer
-	previousSquareHorizontal $t3 1
-	isBlockFree $t3
-	beq $v0 $0 fail #Dont Move if space isn't free
+	beq $t3 %p3 test2 #A piece can't be traped but itself
 	nop
-	and $t3 %p3 %p3 #Copy the pointer
-	previousSquareHorizontal $t3 1
-	isBlockFree $t3
-	beq $v0 $0 fail #Dont Move if space isn't free
+	beq $t3 %p4 test2 #A piece can't be traped but itself
 	nop
-	and $t3 %p4 %p4 #Copy the pointer
-	previousSquareHorizontal $t3 1
-	isBlockFree $t3
 	beq $v0 $0 fail #Dont Move if space isn't free
 	nop
 
+	test2:
+	and $t3 %p2 %p2 #Copy the pointer
+	previousSquareHorizontal $t3 1
+	isBlockFree $t3
+	beq $t3 %p1 test3 #A piece can't be traped but itself
+	nop
+	beq $t3 %p3 test3 #A piece can't be traped but itself
+	nop
+	beq $t3 %p4 test3 #A piece can't be traped but itself
+	nop
+	beq $v0 $0 fail #Dont Move if space isn't free
+	nop
+
+	test3:
+	and $t3 %p3 %p3 #Copy the pointer
+	previousSquareHorizontal $t3 1
+	isBlockFree $t3
+	beq $t3 %p1 test4 #A piece can't be traped but itself
+	nop
+	beq $t3 %p2 test4 #A piece can't be traped but itself
+	nop
+	beq $t3 %p4 test4 #A piece can't be traped but itself
+	nop
+	beq $v0 $0 fail #Dont Move if space isn't free
+	nop
+
+	test4:
+	and $t3 %p4 %p4 #Copy the pointer
+	previousSquareHorizontal $t3 1
+	isBlockFree $t3
+	beq $t3 %p1 endTestes #A piece can't be traped but itself
+	nop
+	beq $t3 %p2 endTestes #A piece can't be traped but itself
+	nop
+	beq $t3 %p3 endTestes #A piece can't be traped but itself
+	nop
+	beq $v0 $0 fail #Dont Move if space isn't free
+	nop
+
+	endTestes:
 	lw $t2 8(%p1) #(2*4) Get Light
 	lw $t3 2104(%p1) #(16*32*4) + (14*4)Get Dark
 	lw $t4 4112(%p1) #(16*32*4*2) + (4*4)Get Color
