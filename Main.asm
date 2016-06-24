@@ -4281,7 +4281,7 @@ loopNextBlock:
 #Testes if a block can be moved to that space
 .macro isBlockFree (%pointer) #$1: Pointer of block to be tested; $v0: Returns 1 if empty, otherwise returns 0
 	pushWord $t0
-	lw $t0 (%pointer)
+	lw $t0 8(%pointer)
 	seq $v0 $t0 $0 #If $t0 == $0 then $v0 = 1, else $v0 = 0
 	popWord $t0
 .end_macro
@@ -4377,18 +4377,36 @@ end:
 	and $t3 %p1 %p1 #Copy the pointer
 	nextSquareVertical $t3 1
 	isBlockFree $t3
+	beq $t3 %p2 test2 #A piece can't be traped but itself
+	nop
+	beq $t3 %p3 test2 #A piece can't be traped but itself
+	nop
+	beq $t3 %p4 test2 #A piece can't be traped but itself
+	nop
 	beq $v0 $0 fail #Dont Move if space isn't free and returns a flag
 	nop
+
+	test2:
 	and $t3 %p2 %p2 #Copy the pointer
 	nextSquareVertical $t3 1
 	isBlockFree $t3
+	beq $t3 %p3 test3 #A piece can't be traped but itself
+	nop
+	beq $t3 %p4 test3 #A piece can't be traped but itself
+	nop
 	beq $v0 $0 fail #Dont Move if space isn't free and returns a flag
 	nop
+
+	test3:
 	and $t3 %p3 %p3 #Copy the pointer
 	nextSquareVertical $t3 1
 	isBlockFree $t3
+	beq $t3 %p4 test4 #A piece can't be traped but itself
+	nop
 	beq $v0 $0 fail #Dont Move if space isn't free and returns a flag
 	nop
+
+	test4:
 	and $t3 %p4 %p4 #Copy the pointer
 	nextSquareVertical $t3 1
 	isBlockFree $t3
@@ -4533,42 +4551,445 @@ end:
 	popWord $t2
 .end_macro
 
+######################
+# Drown Piece Macros #
+######################
+
+#Paint a blue Piece based on %p1 position and set the 4 arguments to the 4 squares
+#Returns 1 if fail to create
+.macro bluePiece (%p1, %p2, %p3, %p4) #$1 - 4: Pointers to the piece;
+	pushWord $t2
+	pushWord $t3
+	pushWord $t4
+
+	ori $t2 $0 0x4141FF #Color
+	ori $t3 $0 0x5182FF #Light
+	ori $t4 $0 0x2800ba #Dark
+
+	#No need to set %p1
+
+	#Set %p2
+	and %p2 %p1 %p1
+	nextSquareVertical %p2 1 #Set %p2
+
+	#Set %p3
+	and %p3 %p2 %p2
+	previousSquareHorizontal %p3 1 #Set %p3
+
+	#Set %p3
+	and %p4 %p2 %p2
+	nextSquareHorizontal %p4 1 #Set %p4
+
+	isBlockFree %p1 #Returns 0 if block isn't free for moving
+	beq $v0 $0 end
+	nop
+	isBlockFree %p2 #Returns 0 if block isn't free for moving
+	beq $v0 $0 end
+	nop
+	isBlockFree %p3 #Returns 0 if block isn't free for moving
+	beq $v0 $0 end
+	nop
+	isBlockFree %p4 #Returns 0 if block isn't free for moving
+	beq $v0 $0 end
+	nop
+
+	paintBlock $t2 $t3 $t4 %p1 0
+	paintBlock $t2 $t3 $t4 %p2 0
+	paintBlock $t2 $t3 $t4 %p3 0
+	paintBlock $t2 $t3 $t4 %p4 0
+
+	end:
+	popWord $t4
+	popWord $t3
+	popWord $t2
+.end_macro
+
+#Paint a purple Piece based on %p1 position and set the 4 arguments to the 4 squares
+#Returns 1 if fail to create
+.macro purplePiece (%p1, %p2, %p3, %p4) #$1 - 4: Pointers to the piece;
+	pushWord $t2
+	pushWord $t3
+	pushWord $t4
+
+	ori $t2 $0 0x9241F3 #Color
+	ori $t3 $0 0xA271FF #Light
+	ori $t4 $0 0x6110A2 #Dark
+
+	#No need to set %p1
+
+	#Set %p2
+	and %p2 %p1 %p1
+	nextSquareVertical %p2 1 #Set %p2
+
+	#Set %p3
+	and %p3 %p2 %p2
+	nextSquareVertical %p3 1 #Set %p3
+
+	#Set %p3
+	and %p4 %p3 %p3
+	nextSquareVertical %p4 1 #Set %p4
+
+	isBlockFree %p1 #Returns 0 if block isn't free for moving
+	beq $v0 $0 end
+	nop
+	isBlockFree %p2 #Returns 0 if block isn't free for moving
+	beq $v0 $0 end
+	nop
+	isBlockFree %p3 #Returns 0 if block isn't free for moving
+	beq $v0 $0 end
+	nop
+	isBlockFree %p4 #Returns 0 if block isn't free for moving
+	beq $v0 $0 end
+	nop
+
+	paintBlock $t2 $t3 $t4 %p1 0
+	paintBlock $t2 $t3 $t4 %p2 0
+	paintBlock $t2 $t3 $t4 %p3 0
+	paintBlock $t2 $t3 $t4 %p4 0
+
+	end:
+	popWord $t4
+	popWord $t3
+	popWord $t2
+.end_macro
+
+#Paint a orange Piece based on %p1 position and set the 4 arguments to the 4 squares
+#Returns 1 if fail to create
+.macro orangePiece (%p1, %p2, %p3, %p4) #$1 - 4: Pointers to the piece;
+	pushWord $t2
+	pushWord $t3
+	pushWord $t4
+
+	ori $t2 $0 0xE35100 #Color
+	ori $t3 $0 0xFF7930 #Light
+	ori $t4 $0 0xA23000 #Dark
+
+	#No need to set %p1
+
+	#Set %p2
+	and %p2 %p1 %p1
+	nextSquareHorizontal %p2 1 #Set %p2
+
+	#Set %p3
+	and %p3 %p1 %p1
+	nextSquareVertical %p3 1 #Set %p3
+
+	#Set %p3
+	and %p4 %p3 %p3
+	nextSquareHorizontal %p4 1 #Set %p4
+
+	isBlockFree %p1 #Returns 0 if block isn't free for moving
+	beq $v0 $0 end
+	nop
+	isBlockFree %p2 #Returns 0 if block isn't free for moving
+	beq $v0 $0 end
+	nop
+	isBlockFree %p3 #Returns 0 if block isn't free for moving
+	beq $v0 $0 end
+	nop
+	isBlockFree %p4 #Returns 0 if block isn't free for moving
+	beq $v0 $0 end
+	nop
+
+	paintBlock $t2 $t3 $t4 %p1 0
+	paintBlock $t2 $t3 $t4 %p2 0
+	paintBlock $t2 $t3 $t4 %p3 0
+	paintBlock $t2 $t3 $t4 %p4 0
+
+	end:
+	popWord $t4
+	popWord $t3
+	popWord $t2
+.end_macro
+
+#Paint a green Piece based on %p1 position and set the 4 arguments to the 4 squares
+#Returns 1 if fail to create
+.macro greenPiece (%p1, %p2, %p3, %p4) #$1 - 4: Pointers to the piece;
+	pushWord $t2
+	pushWord $t3
+	pushWord $t4
+
+	ori $t2 $0 0x51a200 #Color
+	ori $t3 $0 0x9aeb00 #Light
+	ori $t4 $0 0x386900 #Shadow
+
+	#No need to set %p1
+
+	#Set %p2
+	and %p2 %p1 %p1
+	nextSquareVertical %p2 1 #Set %p2
+
+	#Set %p3
+	and %p3 %p2 %p2
+	previousSquareHorizontal %p3 1 #Set %p3
+
+	#Set %p3
+	and %p4 %p3 %p3
+	previousSquareHorizontal %p4 1 #Set %p4
+
+	isBlockFree %p1 #Returns 0 if block isn't free for moving
+	beq $v0 $0 end
+	nop
+	isBlockFree %p2 #Returns 0 if block isn't free for moving
+	beq $v0 $0 end
+	nop
+	isBlockFree %p3 #Returns 0 if block isn't free for moving
+	beq $v0 $0 end
+	nop
+	isBlockFree %p4 #Returns 0 if block isn't free for moving
+	beq $v0 $0 end
+	nop
+
+	paintBlock $t2 $t3 $t4 %p1 0
+	paintBlock $t2 $t3 $t4 %p2 0
+	paintBlock $t2 $t3 $t4 %p3 0
+	paintBlock $t2 $t3 $t4 %p4 0
+
+	end:
+	popWord $t4
+	popWord $t3
+	popWord $t2
+.end_macro
+
+#Paint a pink Piece based on %p1 position and set the 4 arguments to the 4 squares
+#Returns 1 if fail to create
+.macro pinkPiece (%p1, %p2, %p3, %p4) #$1 - 4: Pointers to the piece;
+	pushWord $t2
+	pushWord $t3
+	pushWord $t4
+
+	ori $t2 $0 0xDB4161 #Color
+	ori $t3 $0 0xFF61B2 #Light
+	ori $t4 $0 0xB21030 #Shadow
+
+	#No need to set %p1
+
+	#Set %p2
+	and %p2 %p1 %p1
+	nextSquareVertical %p2 1 #Set %p2
+
+	#Set %p3
+	and %p3 %p2 %p2
+	nextSquareHorizontal %p3 1 #Set %p3
+
+	#Set %p3
+	and %p4 %p3 %p3
+	nextSquareHorizontal %p4 1 #Set %p4
+
+	isBlockFree %p1 #Returns 0 if block isn't free for moving
+	beq $v0 $0 end
+	nop
+	isBlockFree %p2 #Returns 0 if block isn't free for moving
+	beq $v0 $0 end
+	nop
+	isBlockFree %p3 #Returns 0 if block isn't free for moving
+	beq $v0 $0 end
+	nop
+	isBlockFree %p4 #Returns 0 if block isn't free for moving
+	beq $v0 $0 end
+	nop
+
+	paintBlock $t2 $t3 $t4 %p1 0
+	paintBlock $t2 $t3 $t4 %p2 0
+	paintBlock $t2 $t3 $t4 %p3 0
+	paintBlock $t2 $t3 $t4 %p4 0
+
+	end:
+	popWord $t4
+	popWord $t3
+	popWord $t2
+.end_macro
+
+#Paint a yellow Piece based on %p1 position and set the 4 arguments to the 4 squares
+#Returns 1 if fail to create
+.macro yellowPiece (%p1, %p2, %p3, %p4) #$1 - 4: Pointers to the piece;
+	pushWord $t2
+	pushWord $t3
+	pushWord $t4
+
+	ori $t2 $0 0xEBD320 #Color
+	ori $t3 $0 0xFFF392 #Light
+	ori $t4 $0 0x8A8A00 #Shadow
+
+	#No need to set %p1
+
+	#Set %p2
+	and %p2 %p1 %p1
+	previousSquareHorizontal %p2 1 #Set %p2
+
+	#Set %p3
+	and %p3 %p1 %p1
+	nextSquareVertical %p3 1 #Set %p3
+
+	#Set %p3
+	and %p4 %p3 %p3
+	nextSquareHorizontal %p4 1 #Set %p4
+
+	isBlockFree %p1 #Returns 0 if block isn't free for moving
+	beq $v0 $0 end
+	nop
+	isBlockFree %p2 #Returns 0 if block isn't free for moving
+	beq $v0 $0 end
+	nop
+	isBlockFree %p3 #Returns 0 if block isn't free for moving
+	beq $v0 $0 end
+	nop
+	isBlockFree %p4 #Returns 0 if block isn't free for moving
+	beq $v0 $0 end
+	nop
+
+	paintBlock $t2 $t3 $t4 %p1 0
+	paintBlock $t2 $t3 $t4 %p2 0
+	paintBlock $t2 $t3 $t4 %p3 0
+	paintBlock $t2 $t3 $t4 %p4 0
+
+	end:
+	popWord $t4
+	popWord $t3
+	popWord $t2
+.end_macro
+
+#Paint a white Piece based on %p1 position and set the 4 arguments to the 4 squares
+#Returns 1 if fail to create
+.macro whitePiece (%p1, %p2, %p3, %p4) #$1 - 4: Pointers to the piece;
+	pushWord $t2
+	pushWord $t3
+	pushWord $t4
+
+	ori $t2 $0 0xEBEBEB #Color
+	ori $t3 $0 0xFFFFFF #Light
+	ori $t4 $0 0xB2B2B2 #Shadow
+
+	#No need to set %p1
+
+	#Set %p2
+	and %p2 %p1 %p1
+	nextSquareHorizontal %p2 1 #Set %p2
+
+	#Set %p3
+	and %p3 %p1 %p1
+	previousSquareVertical %p3 1 #Set %p3
+
+	#Set %p3
+	and %p4 %p3 %p3
+	previousSquareHorizontal %p4 1 #Set %p4
+
+	isBlockFree %p1 #Returns 0 if block isn't free for moving
+	beq $v0 $0 end
+	nop
+	isBlockFree %p2 #Returns 0 if block isn't free for moving
+	beq $v0 $0 end
+	nop
+	isBlockFree %p3 #Returns 0 if block isn't free for moving
+	beq $v0 $0 end
+	nop
+	isBlockFree %p4 #Returns 0 if block isn't free for moving
+	beq $v0 $0 end
+	nop
+
+	paintBlock $t2 $t3 $t4 %p1 0
+	paintBlock $t2 $t3 $t4 %p2 0
+	paintBlock $t2 $t3 $t4 %p3 0
+	paintBlock $t2 $t3 $t4 %p4 0
+
+	end:
+	popWord $t4
+	popWord $t3
+	popWord $t2
+.end_macro
 
 #############
 # MAIN CODE #
 #############
 .text
+
+main:
 	jal printBaseInterface
 	nop
 	and $s2 $v0 $v0 #Score Box Pointer
 	and $s3 $v1 $v1 #Lines Box Pointer
 
 	and $s1 $gp $gp #Pointer to block
-	ori $s0 $0 0x51a200 #Color to the block
-	ori $s4 $0 0x9aeb00 #Light to the block
-	ori $s5 $0 0x386900 #Shadow to the block
 	nextSquareVertical $s1 1
-	nextSquareHorizontal $s1 9
+	nextSquareHorizontal $s1 9 #Set position of inicial block
 
-	paintBlock $s0 $s4 $s5 $s1 0
-	and $a0 $s1 $s1
-
-	nextSquareVertical $s1 1
-	paintBlock $s0 $s4 $s5 $s1 0
-	and $a1 $s1 $s1
-
-	previousSquareHorizontal $s1 1
-	paintBlock $s0 $s4 $s5 $s1 0
-	and $a2 $s1 $s1
-
-	previousSquareHorizontal $s1 1
-	paintBlock $s0 $s4 $s5 $s1 0
-	and $a3 $s1 $s1
+playLoop:
+	and $a0 $s1 $s1 #Pointer to piece Start
+	jal GeneratePiece
+	nop
 
 	jal MovePiece
 	nop
+
+	j playLoop
+	nop
+
 	ori $v0 $0 0xA
 	syscall #End the game
+
+#Subrotine to generate a random piece
+#Takes $a0 as argument to creat a piece at that point
+#Returns 4 pointers in $a0 to $a3 to the piece
+	GeneratePiece:
+		pushWord $t0
+		pushWord $a0
+		ori $v0 $0 42 #Code to random number from range
+		ori $t0 $0 7
+		ori $a0 $0 1 #set Lower Value
+		ori $a1 $0 9999 #Set Highter Value
+		syscall #Generates a random number and saves on $a0
+		div $a0 $t0 #Mod 7
+		mfhi $t0
+		popWord $a0
+
+		beq $t0 0 green
+		nop
+		beq $t0 1 pink
+		nop
+		beq $t0 2 blue
+		nop
+		beq $t0 3 yellow
+		nop
+		beq $t0 4 white
+		nop
+		beq $t0 5 orange
+		nop
+		beq $t0 6 purple
+		nop
+
+
+	green:
+		greenPiece $a0 $a1 $a2 $a3
+		j end
+		nop
+	pink:
+		pinkPiece $a0 $a1 $a2 $a3
+		j end
+		nop
+	blue:
+		bluePiece $a0 $a1 $a2 $a3
+		j end
+		nop
+	yellow:
+		yellowPiece $a0 $a1 $a2 $a3
+		j end
+		nop
+	white:
+		whitePiece $a0 $a1 $a2 $a3
+		j end
+		nop
+	orange:
+		orangePiece $a0 $a1 $a2 $a3
+		j end
+		nop
+	purple:
+		purplePiece $a0 $a1 $a2 $a3
+		#j end
+		#nop
+	end:
+	popWord $t0
+	jr $ra
+	nop
 
 #Subrotine to move the piece
 	MovePiece: #Takes 4 arguments, the pointers to the piece
