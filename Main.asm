@@ -88,7 +88,7 @@ loop:
 	pushWord $t0
 	and $t0 $0 $0
 loop:
-	addi %pointer %pointer 32768 #64 * 32 * 16
+	addi %pointer %pointer 32768 #16 * 32 * 16 * 4
 	addi $t0 $t0 1
 	blt $t0 %range loop
 	nop
@@ -100,7 +100,7 @@ loop:
 	pushWord $t0
 	and $t0 $0 $0
 loop:
-	addi %ponteiro %ponteiro -32768 #64 * 32 * 16
+	addi %ponteiro %ponteiro -32768 #16 * 32 * 16 * 4
 	addi $t0 $t0 1
 	blt $t0 %range loop
 	nop
@@ -4991,6 +4991,9 @@ main:
 
 		jal MovePiece
 		nop
+		ori $a0 $gp 983104 #(16*32*16*30*4)+(16*4) Points to fist block in last line of the game area
+		jal cleanFullBlockLines# $a0
+		nop
 
 		j playLoop
 		nop
@@ -5026,7 +5029,6 @@ main:
 		nop
 		beq $t0 6 purple
 		nop
-
 
 	green:
 		greenPiece $a0 $a1 $a2 $a3
@@ -5118,3 +5120,73 @@ printBaseInterface:
 	paintFullLine $a0 $a1 1
 	jr $ra
 	nop
+	#Move all the squares one line
+	cleanFullBlockLines:# (%pointer)
+		pushWord $t0
+	  pushWord $t1
+	  pushWord $t2
+	  pushWord $t3
+	  pushWord $t4
+
+	  and $v0 $0 $0
+	  #Check if Line is Full
+	CheckIfFull:
+	  pushWord $a0
+	  and $t2 $a0 $a0 #Copy the pointer
+	  and $t1 $0 $0 #Starts Square counter
+		#ori $t0 $gp 983104 #(16*32*16*30*4)+(16*4) Points to fist block in last line of the game area
+	  testLoop:
+	    lw $t0 16($t2) #Load value from block
+	    beq $t0 $0 LookForNewLines #Jump if there's no block
+	    nop
+	    addi $t1 $t1 1
+	    beq $t1 17 StartMoving #If all lines have blocks
+	    nop
+	    addi $t2 $t2 64 #(16*4) Goes to nextSquare
+	    j testLoop
+	    nop
+	StartMoving:
+	  and $t1 $0 $0 #Block Column Counter
+	  and $t3 $0 $0 #Block Line Counter
+	  ori $t4 $0 1  #Blocks Counter
+	  and $t2 $a0 $a0
+	  paintLine $0 $t2 17 0 #Clean this Line
+	  droppingLine:
+	    addi $t3 $t3 1
+	    droppingLineLine:
+	      lw $t0 -32768($t2) #previousSquareVertical
+	      sw $t0 0($t2) #Drops
+	      addi $t2 $t2 4 #Next Pixel
+	      addi $t1 $t1 1
+	      blt $t1 272 droppingLineLine #(16*17)Goes til the end of the line
+	      nop
+			and $t1 $0 $0
+	    addi $t2 $t2 -1088 #(16*17*4)Goes to the start of the line
+	    addi $t2 $t2 2048 #NextPixelLine
+	    blt $t3 16 droppingLine
+	    nop
+	  #FullLine Droped
+	  addi $a0 $a0 -32768 #previousSquareVertical
+	  addi $t0 $gp 32832 #((16×32×16)+16)×4 First Line in game scream
+	  bgt $a0 $t0 StartMoving
+	  nop #Can't go to the end from here, because more the one lien can be completed at a time
+	LookForOTHERLines: #As the line has been moved already need to use base line to check if there's any match
+		popWord $a0
+	  addi $t0 $gp 32832 #((16×32×16)+16)×4 First Line in game scream
+		bgt $a0 $t0 CheckIfFull
+		nop
+	LookForNewLines:
+	  #Looking for new Lines to be completed
+	  popWord $a0
+		addi $a0 $a0 -32768 #(16x32x16)x4 previousSquareVertical
+	  addi $t0 $gp 32832 #((16×32×16)+16)×4 First Line in game scream
+	  bgt $a0 $t0 CheckIfFull
+	  nop
+
+	  popWord $t4
+	  popWord $t3
+	  popWord $t2
+	  popWord $t1
+		popWord $t0
+		jr $ra
+		nop
