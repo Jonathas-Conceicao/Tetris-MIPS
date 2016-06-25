@@ -5145,10 +5145,10 @@ printBaseInterface:
 	    addi $t2 $t2 64 #(16*4) Goes to nextSquare
 	    j testLoop
 	    nop
-	StartMoving:
+	StartMoving: #Starts moving a new line
 	  and $t1 $0 $0 #Block Column Counter
 	  and $t3 $0 $0 #Block Line Counter
-	  ori $t4 $0 1  #Blocks Counter
+	  and $t4 $0 $0  #Black Blocks Counter
 	  and $t2 $a0 $a0
 	  paintLine $0 $t2 17 0 #Clean this Line
 	  droppingLine:
@@ -5158,8 +5158,11 @@ printBaseInterface:
 	      sw $t0 0($t2) #Drops
 	      addi $t2 $t2 4 #Next Pixel
 	      addi $t1 $t1 1
-	      blt $t1 272 droppingLineLine #(16*17)Goes til the end of the line
+				or $t4 $t4 $t0
+				blt $t1 272 droppingLineLine #(16*17)Goes til the end of the line
 	      nop
+			beq $t4 $0 LookForOTHERLines #If at this point $t4 is still 0, that means that only black pixels was found and theres no need to keep dropping blocks
+			nop
 			and $t1 $0 $0
 	    addi $t2 $t2 -1088 #(16*17*4)Goes to the start of the line
 	    addi $t2 $t2 2048 #NextPixelLine
