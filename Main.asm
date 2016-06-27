@@ -6867,6 +6867,9 @@ CheckIfFull:
   nop
 ScoreLine:
 	addi $v0 $v0 1
+	bne $a0 269451328 StartMoving
+	nop
+		addi $v0 $v0 9 #If base line was completed the score is highter 
 StartMoving: #Starts moving a new line
   and $t1 $0 $0 #Block Column Counter
   and $t3 $0 $0 #Block Line Counter
