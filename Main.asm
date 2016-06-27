@@ -5319,7 +5319,7 @@ end:
 .end_macro
 
 #Moves the piece according to the FIFO List
-.macro mover (%p1, %p2, %p3, %p4) #$1 to 4: Pointesr to the piece to move; $v0: Returns 1 if no move is made.
+.macro mover (%p1, %p2, %p3, %p4, %state) #$1 to 4: Pointesr to the piece to move; $v0: Returns 1 if no move is made.
 	pushWord $t2
 	isFEmpty
 	and $t2 $v0 $v0 #Saves return of the function
@@ -5344,7 +5344,8 @@ end:
 	beq $t2 0x64 SoftDrop #If read 'd'
 	nop
 Spin:
-	and $v0 $0 $0 #Set return falg to indicates move made
+	callSpin %p1 %p2 %p3 %p4 %state
+	# and $v0 $0 $0 #Set return falg to indicates move made
 	j end
 	nop
 Left:
@@ -5626,12 +5627,712 @@ end:
 	popWord $t2
 .end_macro
 
+#Calls the correcet Spin macro
+.macro callSpin (%p1, %p2, %p3, %p4, %state) #$1 - 4: Pointers to the piece; $5 Piece atual state
+	pushWord $t0
+	lw $t0 8(%p1)
+
+	beq $t0 0x5182FF callBlue
+	nop
+	beq $t0 0xA271FF callPurple
+	nop
+	beq $t0 0xFF7930 callOrange
+	nop
+	beq $t0 0x9AEB00 callGreen
+	nop
+	beq $t0 0xFF61B2 callPink
+	nop
+	beq $t0 0xFFF392 callYellow
+	nop
+	beq $t0 0xFFFFFF callWhite
+	nop
+
+
+	callBlue:
+		spinBlue %p1 %p2 %p3 %p4 %state
+		j end
+		nop
+	callPurple:
+		spinPurple %p1 %p2 %p3 %p4 %state
+		j end
+		nop
+	callOrange:
+		spinOrange %p1 %p2 %p3 %p4 %state
+		j end
+		nop
+	callGreen:
+		spinGreen %p1 %p2 %p3 %p4 %state
+		j end
+		nop
+	callPink:
+		spinPink %p1 %p2 %p3 %p4 %state
+		j end
+		nop
+	callYellow:
+		spinYellow %p1 %p2 %p3 %p4 %state
+		j end
+		nop
+	callWhite:
+		spinWhite %p1 %p2 %p3 %p4 %state
+		# j end
+		# nop
+	end:
+	popWord $t0
+.end_macro
+
+#Spin the blue Piece
+#Returns 1 if fail to spin
+.macro spinBlue (%p1, %p2, %p3, %p4, %state) #$1 - 4: Pointers to the piece; $5 Piece atual state
+	pushWord $t2
+	pushWord $t3
+	pushWord $t4
+	pushWord $t5
+	ori $t2 $0 0x4141FF #Color
+	ori $t3 $0 0x5182FF #Light
+	ori $t4 $0 0x2800ba #Dark
+
+	beq %state 1 state1
+	nop
+	beq %state 2 state2
+	nop
+	beq %state 3 state3
+	nop
+	beq %state 4 state4
+	nop
+	state1:
+		and $t5 %p3 %p3 #Copy pointer
+		addi $t5 $t5 64 #nextSquareHorizontal
+		addi $t5 $t5 32768 #nextSquareVertical
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+		paintSquare $0 %p3 0 #Erease piece
+		and %p3 $t5 $t5
+		paintBlock $t2 $t3 $t4 %p3 0
+		ori %state $0 2 #Set State
+		and $v0 $0 $0 #Set return value to success
+		j end
+		nop
+	state2:
+		and $t5 %p1 %p1 #Copy pointer
+		addi $t5 $t5 -64 #previousSquareHorizontal
+		addi $t5 $t5 32768 #nextSquareVertical
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+		paintSquare $0 %p1 0 #Erease piece
+		and %p1 $t5 $t5
+		paintBlock $t2 $t3 $t4 %p1 0
+		ori %state $0 3 #Set State
+		and $v0 $0 $0 #Set return value to success
+		j end
+		nop
+	state3:
+		and $t5 %p4 %p4 #Copy pointer
+		addi $t5 $t5 -64 #previousSquareHorizontal
+		addi $t5 $t5 -32768 #previousSquareVertical
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+		paintSquare $0 %p4 0 #Erease piece
+		and %p4 $t5 $t5
+		paintBlock $t2 $t3 $t4 %p4 0
+		ori %state $0 4 #Set State
+		and $v0 $0 $0 #Set return value to success
+		j end
+		nop
+	state4:
+		and $t5 %p3 %p3 #Copy pointer
+		addi $t5 $t5 64 #nextSquareHorizontal
+		addi $t5 $t5 -32768 #previousSquareVertical
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+		paintSquare $0 %p3 0 #Erease piece
+		and %p3 $t5 $t5
+		paintBlock $t2 $t3 $t4 %p3 0
+		#Reorganaize the pointers back
+		and $t5 %p4 %p4
+		and %p4 %p1 %p1
+		and %p1 $t5 $t5
+		and $t5 %p4 %p4
+		and %p4 %p3 %p3
+		and %p3 $t5 $t5
+
+		ori %state $0 1 #Set State
+		and $v0 $0 $0 #Set return value to success
+		j end
+		nop
+	fail:
+		ori $v0 $0 1
+	end:
+	popWord $t5
+	popWord $t4
+	popWord $t3
+	popWord $t2
+.end_macro
+
+#Spin the Purple Piece
+#Returns 1 if fail to spin
+.macro spinPurple (%p1, %p2, %p3, %p4, %state) #$1 - 4: Pointers to the piece; $5 Piece atual state
+	pushWord $t2
+	pushWord $t3
+	pushWord $t4
+	pushWord $t5
+
+	ori $t2 $0 0x9241F3 #Color
+	ori $t3 $0 0xA271FF #Light
+	ori $t4 $0 0x6110A2 #Dark
+
+	beq %state 1 state1
+	nop
+	beq %state 2 state2
+	nop
+	state1:
+		and $t5 %p1 %p1 #Copy pointer
+		addi $t5 $t5 64 #nextSquareHorizontal
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+		addi $t5 $t5 64 #nextSquareHorizontal
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+		addi $t5 $t5 64 #nextSquareHorizontal
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+		paintSquare $0 %p2 0 #Erease piece
+		paintSquare $0 %p3 0 #Erease piece
+		paintSquare $0 %p4 0 #Erease piece
+		and %p2 %p1 %p1
+		addi %p2 %p2 64 #nextSquareHorizontal
+		and %p3 %p2 %p2
+		addi %p3 %p3 64 #nextSquareHorizontal
+		and %p4 %p3 %p3
+		addi %p4 %p4 64 #nextSquareHorizontal
+
+		paintBlock $t2 $t3 $t4 %p2 0
+		paintBlock $t2 $t3 $t4 %p3 0
+		paintBlock $t2 $t3 $t4 %p4 0
+
+		ori %state $0 2 #Set State
+		and $v0 $0 $0 #Set return value to success
+		j end
+		nop
+	state2:
+		and $t5 %p1 %p1 #Copy pointer
+		addi $t5 $t5 32768 #nextSquareVertical
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+		addi $t5 $t5 32768 #nextSquareVertical
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+		addi $t5 $t5 32768 #nextSquareVertical
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+		paintSquare $0 %p2 0 #Erease piece
+		paintSquare $0 %p3 0 #Erease piece
+		paintSquare $0 %p4 0 #Erease piece
+		and %p2 %p1 %p1
+		addi %p2 %p2 32768 #nextSquareVertical
+		and %p3 %p2 %p2
+		addi %p3 %p3 32768 #nextSquareVertical
+		and %p4 %p3 %p3
+		addi %p4 %p4 32768 #nextSquareVertical
+
+		paintBlock $t2 $t3 $t4 %p2 0
+		paintBlock $t2 $t3 $t4 %p3 0
+		paintBlock $t2 $t3 $t4 %p4 0
+
+		ori %state $0 1 #Set State
+		and $v0 $0 $0 #Set return value to success
+		j end
+		nop
+	fail:
+		ori $v0 $0 1
+	end:
+	popWord $t5
+	popWord $t4
+	popWord $t3
+	popWord $t2
+.end_macro
+
+#Spin the Green Piece
+#Returns 1 if fail to spin
+.macro spinGreen (%p1, %p2, %p3, %p4, %state) #$1 - 4: Pointers to the piece; $5 Piece atual state
+	pushWord $t2
+	pushWord $t3
+	pushWord $t4
+	pushWord $t5
+
+	ori $t2 $0 0x51a200 #Color
+	ori $t3 $0 0x9aeb00 #Light
+	ori $t4 $0 0x386900 #Shadow
+
+	beq %state 1 state1
+	nop
+	beq %state 2 state2
+	nop
+	beq %state 3 state3
+	nop
+	beq %state 4 state4
+	nop
+
+	state1:
+		and $t5 %p1 %p1 #Copy Pointer
+		addi $t5 $t5 -64
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+		addi $t5 $t5 -32768
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+		addi $t5 $t5 -32768
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+
+		paintSquare $0 %p4 0
+		and %p4 $t5 $t5
+		paintBlock $t2 $t3 $t4 %p4 0
+
+		paintSquare $0 %p2 0
+		addi %p2 %p1 -64
+		paintBlock $t2 $t3 $t4 %p2 0
+
+		paintSquare $0 %p3 0
+		addi %p3 %p2 -32768
+		paintBlock $t2 $t3 $t4 %p3 0
+
+		ori %state $0 2 #Set State
+		and $v0 $0 $0 #Set return value to success
+		j end
+		nop
+	state2:
+		and $t5 %p1 %p1 #Copy Pointer
+		addi $t5 $t5 -32768
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+		addi $t5 $t5 64
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+		addi $t5 $t5 64
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+
+		paintSquare $0 %p4 0
+		and %p4 $t5 $t5
+		paintBlock $t2 $t3 $t4 %p4 0
+
+		paintSquare $0 %p2 0
+		addi %p2 %p1 -32768
+		paintBlock $t2 $t3 $t4 %p2 0
+
+		paintSquare $0 %p3 0
+		addi %p3 %p2 64
+		paintBlock $t2 $t3 $t4 %p3 0
+
+		ori %state $0 3 #Set State
+		and $v0 $0 $0 #Set return value to success
+		j end
+		nop
+	state3:
+		and $t5 %p1 %p1 #Copy Pointer
+		addi $t5 $t5 64
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+		addi $t5 $t5 32768
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+		addi $t5 $t5 32768
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+
+		paintSquare $0 %p4 0
+		and %p4 $t5 $t5
+		paintBlock $t2 $t3 $t4 %p4 0
+
+		paintSquare $0 %p2 0
+		addi %p2 %p1 64
+		paintBlock $t2 $t3 $t4 %p2 0
+
+		paintSquare $0 %p3 0
+		addi %p3 %p2 32768
+		paintBlock $t2 $t3 $t4 %p3 0
+
+		ori %state $0 4 #Set State
+		and $v0 $0 $0 #Set return value to success
+		j end
+		nop
+	state4:
+		and $t5 %p1 %p1 #Copy Pointer
+		addi $t5 $t5 32768
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+		addi $t5 $t5 -64
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+		addi $t5 $t5 -64
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+
+		paintSquare $0 %p4 0
+		and %p4 $t5 $t5
+		paintBlock $t2 $t3 $t4 %p4 0
+
+		paintSquare $0 %p2 0
+		addi %p2 %p1 32768
+		paintBlock $t2 $t3 $t4 %p2 0
+
+		paintSquare $0 %p3 0
+		addi %p3 %p2 -64
+		paintBlock $t2 $t3 $t4 %p3 0
+
+		ori %state $0 1 #Set State
+		and $v0 $0 $0 #Set return value to success
+		j end
+		nop
+
+	fail:
+		ori $v0 $0 1
+	end:
+	popWord $t5
+	popWord $t4
+	popWord $t3
+	popWord $t2
+.end_macro
+
+#Spin the Pink Piece
+#Returns 1 if fail to spin
+.macro spinPink (%p1, %p2, %p3, %p4, %state) #$1 - 4: Pointers to the piece; $5 Piece atual state
+	pushWord $t2
+	pushWord $t3
+	pushWord $t4
+	pushWord $t5
+
+	ori $t2 $0 0xDB4161 #Color
+	ori $t3 $0 0xFF61B2 #Light
+	ori $t4 $0 0xB21030 #Shadow
+
+	beq %state 1 state1
+	nop
+	beq %state 2 state2
+	nop
+	beq %state 3 state3
+	nop
+	beq %state 4 state4
+	nop
+
+	state1:
+		and $t5 %p1 %p1 #Copy Pointer
+		addi $t5 $t5 64
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+		addi $t5 $t5 -32768
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+		addi $t5 $t5 -32768
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+
+		paintSquare $0 %p4 0
+		and %p4 $t5 $t5
+		paintBlock $t2 $t3 $t4 %p4 0
+
+		paintSquare $0 %p2 0
+		addi %p2 %p1 64
+		paintBlock $t2 $t3 $t4 %p2 0
+
+		paintSquare $0 %p3 0
+		addi %p3 %p2 -32768
+		paintBlock $t2 $t3 $t4 %p3 0
+
+		ori %state $0 2 #Set State
+		and $v0 $0 $0 #Set return value to success
+		j end
+		nop
+	state2:
+		and $t5 %p1 %p1 #Copy Pointer
+		addi $t5 $t5 -32768
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+		addi $t5 $t5 -64
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+		addi $t5 $t5 -64
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+
+		paintSquare $0 %p4 0
+		and %p4 $t5 $t5
+		paintBlock $t2 $t3 $t4 %p4 0
+
+		paintSquare $0 %p2 0
+		addi %p2 %p1 -32768
+		paintBlock $t2 $t3 $t4 %p2 0
+
+		paintSquare $0 %p3 0
+		addi %p3 %p2 -64
+		paintBlock $t2 $t3 $t4 %p3 0
+
+		ori %state $0 3 #Set State
+		and $v0 $0 $0 #Set return value to success
+		j end
+		nop
+	state3:
+		and $t5 %p1 %p1 #Copy Pointer
+		addi $t5 $t5 -64
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+		addi $t5 $t5 32768
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+		addi $t5 $t5 32768
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+
+		paintSquare $0 %p4 0
+		and %p4 $t5 $t5
+		paintBlock $t2 $t3 $t4 %p4 0
+
+		paintSquare $0 %p2 0
+		addi %p2 %p1 -64
+		paintBlock $t2 $t3 $t4 %p2 0
+
+		paintSquare $0 %p3 0
+		addi %p3 %p2 32768
+		paintBlock $t2 $t3 $t4 %p3 0
+
+		ori %state $0 4 #Set State
+		and $v0 $0 $0 #Set return value to success
+		j end
+		nop
+	state4:
+		and $t5 %p1 %p1 #Copy Pointer
+		addi $t5 $t5 32768
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+		addi $t5 $t5 64
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+		addi $t5 $t5 64
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+
+		paintSquare $0 %p4 0
+		and %p4 $t5 $t5
+		paintBlock $t2 $t3 $t4 %p4 0
+
+		paintSquare $0 %p2 0
+		addi %p2 %p1 32768
+		paintBlock $t2 $t3 $t4 %p2 0
+
+		paintSquare $0 %p3 0
+		addi %p3 %p2 64
+		paintBlock $t2 $t3 $t4 %p3 0
+
+		ori %state $0 1 #Set State
+		and $v0 $0 $0 #Set return value to success
+		j end
+		nop
+
+	fail:
+		ori $v0 $0 1
+	end:
+	popWord $t5
+	popWord $t4
+	popWord $t3
+	popWord $t2
+.end_macro
+
+#Spin the Yellow Piece
+#Returns 1 if fail to spin
+.macro spinYellow (%p1, %p2, %p3, %p4, %state) #$1 - 4: Pointers to the piece; $5 Piece atual state
+	pushWord $t2
+	pushWord $t3
+	pushWord $t4
+	pushWord $t5
+
+	ori $t2 $0 0xEBD320 #Color
+	ori $t3 $0 0xFFF392 #Light
+	ori $t4 $0 0x8A8A00 #Dark
+
+	beq %state 1 state1
+	nop
+	beq %state 2 state2
+	nop
+	j fail #Shutdn't reach this point
+	nop
+	state1:
+		and $t5 %p1 %p1
+		addi $t5 $t5 -32768
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+		and $t5 %p2 %p2
+		addi $t5 $t5 32768 #previousSquareHorizontal
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+
+		paintSquare $0 %p4 0
+		and %p4 $t5 $t5
+		paintBlock $t2 $t3 $t4 %p4 0
+
+		paintSquare $0 %p3 0
+		addi %p3 %p1 -32768
+		paintBlock $t2 $t3 $t4 %p3 0
+
+		ori %state $0 2 #Set State
+		and $v0 $0 $0 #Set return value to success
+		j end
+		nop
+	state2:
+		and $t5 %p1 %p1
+		addi $t5 $t5 32768
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+		addi $t5 $t5 64
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+
+		paintSquare $0 %p4 0
+		and %p4 $t5 $t5
+		paintBlock $t2 $t3 $t4 %p4 0
+
+		paintSquare $0 %p3 0
+		addi %p3 %p1 32768
+		paintBlock $t2 $t3 $t4 %p3 0
+
+		ori %state $0 1 #Set State
+		and $v0 $0 $0 #Set return value to success
+		j end
+		nop
+	fail:
+		ori $v0 $0 1
+	end:
+	popWord $t5
+	popWord $t4
+	popWord $t3
+	popWord $t2
+.end_macro
+
+#Spin the white Piece
+#Returns 1 if fail to spin
+.macro spinWhite (%p1, %p2, %p3, %p4, %state) #$1 - 4: Pointers to the piece; $5 Piece atual state
+	pushWord $t2
+	pushWord $t3
+	pushWord $t4
+	pushWord $t5
+
+	ori $t2 $0 0xEBEBEB #Color
+	ori $t3 $0 0xFFFFFF #Light
+	ori $t4 $0 0xB2B2B2 #Shadow
+
+	beq %state 1 state1
+	nop
+	beq %state 2 state2
+	nop
+	j fail #Shutdn't reach this point
+	nop
+	state1:
+		and $t5 %p1 %p1
+		addi $t5 $t5 -32768
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+		and $t5 %p2 %p2
+		addi $t5 $t5 32768 #previousSquareHorizontal
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+
+		paintSquare $0 %p4 0
+		and %p4 $t5 $t5
+		paintBlock $t2 $t3 $t4 %p4 0
+
+		paintSquare $0 %p3 0
+		addi %p3 %p1 -32768
+		paintBlock $t2 $t3 $t4 %p3 0
+
+		ori %state $0 2 #Set State
+		and $v0 $0 $0 #Set return value to success
+		j end
+		nop
+	state2:
+		and $t5 %p1 %p1
+		addi $t5 $t5 32768
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+		addi $t5 $t5 -64
+		isBlockFree $t5 #Returns 0 if block is free
+		bne $v0 $0 fail #Dont Move if space isn't free
+		nop
+
+		paintSquare $0 %p4 0
+		and %p4 $t5 $t5
+		paintBlock $t2 $t3 $t4 %p4 0
+
+		paintSquare $0 %p3 0
+		addi %p3 %p1 32768
+		paintBlock $t2 $t3 $t4 %p3 0
+
+		ori %state $0 1 #Set State
+		and $v0 $0 $0 #Set return value to success
+		j end
+		nop
+	fail:
+		ori $v0 $0 1
+	end:
+	popWord $t5
+	popWord $t4
+	popWord $t3
+	popWord $t2
+.end_macro
+
+#Spin the Orange Piece
+#Returns 1 if fail to spin
+.macro spinOrange (%p1, %p2, %p3, %p4, %state) #$1 - 4: Pointers to the piece; $5 Piece atual state
+	and $v0 $0 $0
+.end_macro
+
+
 ######################
 # Drown Piece Macros #
 ######################
 
 #Paint a blue Piece based on %p1 position and set the 4 arguments to the 4 squares
-#Returns 1 if fail to create
+#Returns 1 if fail to create($v0)
+#Returns piece state($v1)
 .macro bluePiece (%p1, %p2, %p3, %p4) #$1 - 4: Pointers to the piece;
 	pushWord $t2
 	pushWord $t3
@@ -5672,6 +6373,7 @@ end:
 	paintBlock $t2 $t3 $t4 %p2 0
 	paintBlock $t2 $t3 $t4 %p3 0
 	paintBlock $t2 $t3 $t4 %p4 0
+	ori $v1 $0 1 #Set Inicial State
 
 	end:
 	popWord $t4
@@ -5721,6 +6423,7 @@ end:
 	paintBlock $t2 $t3 $t4 %p2 0
 	paintBlock $t2 $t3 $t4 %p3 0
 	paintBlock $t2 $t3 $t4 %p4 0
+	ori $v1 $0 1 #Set Inicial State
 
 	end:
 	popWord $t4
@@ -5770,6 +6473,7 @@ end:
 	paintBlock $t2 $t3 $t4 %p2 0
 	paintBlock $t2 $t3 $t4 %p3 0
 	paintBlock $t2 $t3 $t4 %p4 0
+	ori $v1 $0 1 #Set Inicial State
 
 	end:
 	popWord $t4
@@ -5819,6 +6523,7 @@ end:
 	paintBlock $t2 $t3 $t4 %p2 0
 	paintBlock $t2 $t3 $t4 %p3 0
 	paintBlock $t2 $t3 $t4 %p4 0
+	ori $v1 $0 1 #Set Inicial State
 
 	end:
 	popWord $t4
@@ -5868,6 +6573,7 @@ end:
 	paintBlock $t2 $t3 $t4 %p2 0
 	paintBlock $t2 $t3 $t4 %p3 0
 	paintBlock $t2 $t3 $t4 %p4 0
+	ori $v1 $0 1 #Set Inicial State
 
 	end:
 	popWord $t4
@@ -5917,6 +6623,7 @@ end:
 	paintBlock $t2 $t3 $t4 %p2 0
 	paintBlock $t2 $t3 $t4 %p3 0
 	paintBlock $t2 $t3 $t4 %p4 0
+	ori $v1 $0 1 #Set Inicial State
 
 	end:
 	popWord $t4
@@ -5966,6 +6673,7 @@ end:
 	paintBlock $t2 $t3 $t4 %p2 0
 	paintBlock $t2 $t3 $t4 %p3 0
 	paintBlock $t2 $t3 $t4 %p4 0
+	ori $v1 $0 1 #Set Inicial State
 
 	end:
 	popWord $t4
@@ -6072,7 +6780,7 @@ syscall #End the game
 	nop
 
 #Subrotine to move the piece
-MovePiece: #Takes 4 arguments, the pointers to the piece
+MovePiece: #Takes 5 arguments, the pointers to the piece($a0 to a4) and the piece state($v1)
 	startFila #Start's FIFO List to store movements
 	and $t0 $0 $0
 
@@ -6082,7 +6790,7 @@ loop:
 	bgt $t0 19999 autoMove #Control time to move
 	nop
 	salvarMovimento
-	mover $a0 $a1 $a2 $a3
+	mover $a0 $a1 $a2 $a3 $v1
 	#salvarMovimento
 	beq $v0 1 loop #If no move was made jump
 	nop
