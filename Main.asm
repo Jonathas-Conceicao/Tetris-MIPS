@@ -6695,11 +6695,14 @@ main:
 	and $s1 $gp $gp #Pointer to block
 	nextSquareVertical $s1 1
 	nextSquareHorizontal $s1 9 #Set position of inicial block
-	and $s0 $0 $0
+and $s0 $0 $0
 	playLoop:
 		and $a0 $s1 $s1 #Pointer to piece Start
 		ori $v0 $0 1
-		jal GeneratePiece
+		#jal GeneratePiece
+		#nop
+
+		jal GetPiece
 		nop
 		beq $v0 1 gameOver #End the game if fails to generate new piece
 		nop
@@ -6716,6 +6719,103 @@ main:
 gameOver:
 ori $v0 $0 0xA
 syscall #End the game
+
+	GetPiece:
+	pushWord $t2
+	pushWord $t3
+	add $t2 $gp 132640 #(((16×32×16)×4)+(16×24)+8)×4
+	#ori $t3 $0 0x5182FF #Paint's something to check adress
+	#paintSquare $t3 $t2 0
+	lw $t3 8($t2) #Get Block on Next Areas
+	
+	#Code to clean Next Block Area
+	pushWord $t2
+	add $t2 $gp 99712 #(((16×32×16)×3)+(16×22))×4
+	paintLine $0 $t2 6 0
+	addi $t2 $t2 32768 #Next Square Verticalz
+	paintLine $0 $t2 6 0
+	addi $t2 $t2 32768 #Next Square Verticalz
+	paintLine $0 $t2 6 0
+	addi $t2 $t2 32768 #Next Square Verticalz
+	paintLine $0 $t2 6 0
+	addi $t2 $t2 32768 #Next Square Verticalz
+	paintLine $0 $t2 6 0
+	addi $t2 $t2 32768 #Next Square Verticalz
+	paintLine $0 $t2 6 0
+	popWord $t2
+
+	beq $t3 0x5182FF getBlue
+	nop
+	beq $t3 0xA271FF getPurple
+	nop
+	beq $t3 0xFF7930 getOrange
+	nop
+	beq $t3 0x9AEB00 getGreen
+	nop
+	beq $t3 0xFF61B2 getPink
+	nop
+	beq $t3 0xFFF392 getYellow
+	nop
+	beq $t3 0xFFFFFF getWhite
+	nop
+
+	genRandom: #If there was no color in the nextBlock
+		pushWord $a0
+		and $a0 $t2 $t2
+		pushWord $ra
+		jal GeneratePiece #Gerenrate a new random piece on the Next Area
+		nop
+		popWord $ra
+		popWord $a0
+		j GetPiece #Restarts the function
+		nop
+	getBlue:
+		bluePiece $a0 $a1 $a2 $a3
+		j GetEnd
+		nop
+	getGreen:
+		greenPiece $a0 $a1 $a2 $a3
+		j GetEnd
+		nop
+	getPink:
+		pinkPiece $a0 $a1 $a2 $a3
+		j GetEnd
+		nop
+	getYellow:
+		yellowPiece $a0 $a1 $a2 $a3
+		j GetEnd
+		nop
+	getWhite:
+		whitePiece $a0 $a1 $a2 $a3
+		j GetEnd
+		nop
+	getOrange:
+		orangePiece $a0 $a1 $a2 $a3
+		j GetEnd
+		nop
+	getPurple:
+		purplePiece $a0 $a1 $a2 $a3
+		#j GetEnd
+		#nop
+	GetEnd:
+	pushWord $a0 #Saves the pointer to the piece on the scream
+	pushWord $a1
+	pushWord $a2
+	pushWord $a3
+		and $a0 $t2 $t2
+		pushWord $ra
+		jal GeneratePiece #Gerenrate a new random piece on the Next Area
+		nop
+		popWord $ra
+	popWord $a3
+	popWord $a2
+	popWord $a1
+	popWord $a0 #Get back the pointer to the piece
+
+	popWord $t3
+	popWord $t2
+	jr $ra
+	nop
 
 #Subrotine to generate a random piece
 #Takes $a0 as argument to creat a piece at that point
@@ -6748,33 +6848,33 @@ syscall #End the game
 
 	green:
 		greenPiece $a0 $a1 $a2 $a3
-		j end
+		j GenEnd
 		nop
 	pink:
 		pinkPiece $a0 $a1 $a2 $a3
-		j end
+		j GenEnd
 		nop
 	blue:
 		bluePiece $a0 $a1 $a2 $a3
-		j end
+		j GenEnd
 		nop
 	yellow:
 		yellowPiece $a0 $a1 $a2 $a3
-		j end
+		j GenEnd
 		nop
 	white:
 		whitePiece $a0 $a1 $a2 $a3
-		j end
+		j GenEnd
 		nop
 	orange:
 		orangePiece $a0 $a1 $a2 $a3
-		j end
+		j GenEnd
 		nop
 	purple:
 		purplePiece $a0 $a1 $a2 $a3
-		#j end
+		#j GenEnd
 		#nop
-	end:
+	GenEnd:
 	popWord $t0
 	jr $ra
 	nop
