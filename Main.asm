@@ -42,10 +42,10 @@
 	pushWord $t0
 	pushWord %dado
 	pushWord $t7 #Saves the pointer
-loopPopF: #loop to move the elements in the FIFO List
-	lb $t0 2($t7) #Get Next Value
-	sb $t0 1($t7) #Store here
-	addi $t7 $t7 1
+	loopPopF: #loop to move the elements in the FIFO List
+		lb $t0 2($t7) #Get Next Value
+		sb $t0 1($t7) #Store here
+		addi $t7 $t7 1
 	blt $t7 $t8 loopPopF
 	nop
 	popWord $t7
@@ -63,9 +63,9 @@ loopPopF: #loop to move the elements in the FIFO List
 .macro nextSquareHorizontal (%pointer, %range) #$1: Memori Pointer; $2: Quantity of Squares to jump
 	pushWord $t0
 	and $t0 $0 $0
-loop:
-	addi %pointer %pointer 64 # 16*6
-	addi $t0 $t0 1
+	loop:
+		addi %pointer %pointer 64 # 16*6
+		addi $t0 $t0 1
 	blt $t0 %range loop
 	nop
 	popWord $t0
@@ -75,9 +75,9 @@ loop:
 .macro previousSquareHorizontal (%pointer, %range) #$1: Memori Poniter; $2: Quantity of Squares to jump
 	pushWord $t0
 	and $t0 $0 $0
-loop:
-	addi %pointer %pointer -64 #16 * 4
-	addi $t0 $t0 1
+	loop:
+		addi %pointer %pointer -64 #16 * 4
+		addi $t0 $t0 1
 	blt $t0 %range loop
 	nop
 	popWord $t0
@@ -87,9 +87,9 @@ loop:
 .macro nextSquareVertical (%pointer, %range) #$1: Memory Pointer; $2: Quantity of Squares to jump
 	pushWord $t0
 	and $t0 $0 $0
-loop:
-	addi %pointer %pointer 32768 #16 * 32 * 16 * 4
-	addi $t0 $t0 1
+	loop:
+		addi %pointer %pointer 32768 #16 * 32 * 16 * 4
+		addi $t0 $t0 1
 	blt $t0 %range loop
 	nop
 	popWord $t0
@@ -99,9 +99,9 @@ loop:
 .macro previousSquareVertical (%ponteiro, %range) #$1: Memory Poniter; $2: Quantity of Squares to jump
 	pushWord $t0
 	and $t0 $0 $0
-loop:
-	addi %ponteiro %ponteiro -32768 #16 * 32 * 16 * 4
-	addi $t0 $t0 1
+	loop:
+		addi %ponteiro %ponteiro -32768 #16 * 32 * 16 * 4
+		addi $t0 $t0 1
 	blt $t0 %range loop
 	nop
 	popWord $t0
@@ -111,9 +111,9 @@ loop:
 .macro nextPixelLine (%pointer, %range) #$1: Memory Poninter; $2: Quantity of lines to jump
 	pushWord $t0
 	and $t0 $0 $0
-loop:
-	addi %pointer %pointer 2048
-	addi $t0 $t0 1
+	loop:
+		addi %pointer %pointer 2048
+		addi $t0 $t0 1
 	blt $t0 %range loop
 	nop
 	popWord $t0
@@ -134,10 +134,10 @@ loop:
 	pushWord $t0
 	pushWord %pointer
 	and $t0 $zero $zero
-loopLinha:
-	sw %cor (%pointer)
-	addi %pointer %pointer 4 #Next Pixel
-	addi $t0 $t0 1
+	loopLinha:
+		sw %cor (%pointer)
+		addi %pointer %pointer 4 #Next Pixel
+		addi $t0 $t0 1
 	blt $t0 %range loopLinha
 	nop
 	beq $zero %flag StartPointer
@@ -146,10 +146,10 @@ loopLinha:
 	popWord $t0
 	j end
 	nop
-StartPointer:
-	popWord %pointer #Pointer returns at start position
-	popWord $t0
-end:
+	StartPointer:
+		popWord %pointer #Pointer returns at start position
+		popWord $t0
+	end:
 .end_macro
 
 ###################################
@@ -163,15 +163,15 @@ end:
 	pushWord %pointer
 	and $t0 $zero $zero
 	and $t1 $zero $zero
-loopLinha:
-	sw %cor, (%pointer)
-	addi %pointer %pointer 4 #Next Pixel
-	addi $t0 $t0 1 #Line counter increment
+	loopLinha:
+		sw %cor, (%pointer)
+		addi %pointer %pointer 4 #Next Pixel
+		addi $t0 $t0 1 #Line counter increment
 	blt $t0 16 loopLinha
 	nop
-	and $t0 $zero $zero
-	addi %pointer %pointer 1984 #Next line of the square((512-16)*4)
-	addi $t1 $t1 1
+		and $t0 $zero $zero
+		addi %pointer %pointer 1984 #Next line of the square((512-16)*4)
+		addi $t1 $t1 1
 	blt $t1 16 loopLinha
 	nop
 	beq $zero %flag StartPointer
@@ -181,11 +181,11 @@ loopLinha:
 	popWord $t0
 	j end
 	nop
-StartPointer:
-	popWord %pointer #Pointer returns at start position
-	popWord $t1
-	popWord $t0
-end:
+	StartPointer:
+		popWord %pointer #Pointer returns at start position
+		popWord $t1
+		popWord $t0
+	end:
 .end_macro
 
 #Paints a block of the game
@@ -333,9 +333,9 @@ end:
 	popWord $v0 #Descarda a posição antiga do ponteiro
 	j end
 	nop
-StartPointer:
-	popWord %pointer #Pointer returns at start position
-end:
+	StartPointer:
+		popWord %pointer #Pointer returns at start position
+	end:
 .end_macro
 
 #Paint a full squareline
@@ -343,10 +343,10 @@ end:
 	pushWord $t0
 	pushWord %pointer
 	and $t0 $zero $zero
-loopLinha:
-	sw %cor (%pointer)
-	addi %pointer %pointer 4 #Next Pixel
-	add $t0 $t0 1
+	loopLinha:
+		sw %cor (%pointer)
+		addi %pointer %pointer 4 #Next Pixel
+		add $t0 $t0 1
 	blt $t0 8192 loopLinha #8192 (512*16)
 	nop
 	beq $zero %flag StartPointer
@@ -355,10 +355,10 @@ loopLinha:
 	popWord $t0
 	j end
 	nop
-StartPointer:
-	popWord %pointer #Pointer returns at start position
-	popWord $t0
-end:
+	StartPointer:
+		popWord %pointer #Pointer returns at start position
+		popWord $t0
+	end:
 .end_macro
 
 #Paint a line of 'n' squares
@@ -366,10 +366,10 @@ end:
 	pushWord $t0
 	pushWord %pointer
 	and $t0 $zero $zero
-loopLine:
-	paintSquare %cor, %pointer, 0
-	addi $t0 $t0 1
-	addi %pointer %pointer 64 #Next block (16*4)
+	loopLine:
+		paintSquare %cor, %pointer, 0
+		addi $t0 $t0 1
+		addi %pointer %pointer 64 #Next block (16*4)
 	blt $t0 %range loopLine
 	nop
 	beq $zero %flag StartPointer
@@ -378,10 +378,10 @@ loopLine:
 	popWord $t0
 	j end
 	nop
-StartPointer:
-	popWord %pointer #Pointer returns at start position
-	popWord $t0
-end:
+	StartPointer:
+		popWord %pointer #Pointer returns at start position
+		popWord $t0
+	end:
 .end_macro
 
 #This is some magic that's necessary so things wouldn't fall apart
@@ -393,9 +393,9 @@ end:
 .macro paintColumn (%cor, %pointer, %range, %flag)#$1 Color to paint; $2: square pointer; $3 Number of squares to paint; $4: '0' returns origal pointer, else returns the finish pointer;
 	pushWord $t0
 	pushWord %pointer
-loopColuna:
-	paintSquare %cor, %pointer, 1
-	addi $t0 $t0 1
+	loopColuna:
+		paintSquare %cor, %pointer, 1
+		addi $t0 $t0 1
 	blt $t0 %range loopColuna
 	nop
 	beq $zero %flag StartPointer
@@ -404,10 +404,10 @@ loopColuna:
 	popWord $t0
 	j end
 	nop
-StartPointer:
-	popWord %pointer #Pointer returns at start position
-	popWord $t0
-end:
+	StartPointer:
+		popWord %pointer #Pointer returns at start position
+		popWord $t0
+	end:
 .end_macro
 
 ########################
@@ -558,11 +558,11 @@ end:
 	popWord $t2
 	j end
 	nop
-StartPointer:
-	popWord %pointer #Pointer returns at start position
-	popWord $t3
-	popWord $t2
-end:
+	StartPointer:
+		popWord %pointer #Pointer returns at start position
+		popWord $t3
+		popWord $t2
+	end:
 .end_macro
 
 #Paint a white one with a black background
@@ -694,11 +694,11 @@ end:
 	popWord $t2
 	j end
 	nop
-StartPointer:
-	popWord %pointer #Pointer returns at start position
-	popWord $t3
-	popWord $t2
-end:
+	StartPointer:
+		popWord %pointer #Pointer returns at start position
+		popWord $t3
+		popWord $t2
+	end:
 .end_macro
 
 #Paint a white one with a black background
@@ -835,11 +835,11 @@ end:
 	popWord $t2
 	j end
 	nop
-StartPointer:
-	popWord %pointer #Pointer returns at start position
-	popWord $t3
-	popWord $t2
-end:
+	StartPointer:
+		popWord %pointer #Pointer returns at start position
+		popWord $t3
+		popWord $t2
+	end:
 .end_macro
 
 #Paint a white three with a black background
@@ -975,11 +975,11 @@ end:
 	popWord $t2
 	j end
 	nop
-StartPointer:
-	popWord %pointer #Pointer returns at start position
-	popWord $t3
-	popWord $t2
-end:
+	StartPointer:
+		popWord %pointer #Pointer returns at start position
+		popWord $t3
+		popWord $t2
+	end:
 .end_macro
 
 #Paint a white four with a black background
@@ -1119,11 +1119,11 @@ end:
 	popWord $t2
 	j end
 	nop
-StartPointer:
-	popWord %pointer #Pointer returns at start position
-	popWord $t3
-	popWord $t2
-end:
+	StartPointer:
+		popWord %pointer #Pointer returns at start position
+		popWord $t3
+		popWord $t2
+	end:
 .end_macro
 
 #Paint a white five with a black background
@@ -1249,11 +1249,11 @@ end:
 	popWord $t2
 	j end
 	nop
-StartPointer:
-	popWord %pointer #Pointer returns at start position
-	popWord $t3
-	popWord $t2
-end:
+	StartPointer:
+		popWord %pointer #Pointer returns at start position
+		popWord $t3
+		popWord $t2
+	end:
 .end_macro
 
 #Paint a white six with a black background
@@ -1395,11 +1395,11 @@ end:
 	popWord $t2
 	j end
 	nop
-StartPointer:
-	popWord %pointer #Pointer returns at start position
-	popWord $t3
-	popWord $t2
-end:
+	StartPointer:
+		popWord %pointer #Pointer returns at start position
+		popWord $t3
+		popWord $t2
+	end:
 .end_macro
 
 #Paint a white seven with a black background
@@ -1524,11 +1524,11 @@ end:
 	popWord $t2
 	j end
 	nop
-StartPointer:
-	popWord %pointer #Pointer returns at start position
-	popWord $t3
-	popWord $t2
-end:
+	StartPointer:
+		popWord %pointer #Pointer returns at start position
+		popWord $t3
+		popWord $t2
+	end:
 .end_macro
 
 #Paint a white eight with a black background
@@ -1673,11 +1673,11 @@ end:
 	popWord $t2
 	j end
 	nop
-StartPointer:
-	popWord %pointer #Pointer returns at start position
-	popWord $t3
-	popWord $t2
-end:
+	StartPointer:
+		popWord %pointer #Pointer returns at start position
+		popWord $t3
+		popWord $t2
+	end:
 .end_macro
 
 #Paint a white nine with a black background
@@ -1822,11 +1822,11 @@ end:
 	popWord $t2
 	j end
 	nop
-StartPointer:
-	popWord %pointer #Pointer returns at start position
-	popWord $t3
-	popWord $t2
-end:
+	StartPointer:
+		popWord %pointer #Pointer returns at start position
+		popWord $t3
+		popWord $t2
+	end:
 .end_macro
 
 ####################
@@ -1837,12 +1837,12 @@ end:
 .macro	printCleanLine (%cor %pointer %range)
 	pushWord $t0
 	and $t0 $zero $zero
-loopCleanLine:
-	paintSquare %cor %pointer 0
-	nextSquareHorizontal %pointer 18 #17(camp) + 1(inicial column)
-	paintLine %cor %pointer 14 1
-	magicMoveEndLine %pointer
-	addi $t0 $t0 1
+	loopCleanLine:
+		paintSquare %cor %pointer 0
+		nextSquareHorizontal %pointer 18 #17(camp) + 1(inicial column)
+		paintLine %cor %pointer 14 1
+		magicMoveEndLine %pointer
+		addi $t0 $t0 1
 	blt $t0 %range loopCleanLine
 	nop
 	popWord $t0
@@ -1852,14 +1852,14 @@ loopCleanLine:
 .macro printNextBlockLine (%cor %pointer %range)
 	pushWord $t0
 	and $t0 $zero $zero
-loopNextBlock:
-	paintSquare %cor %pointer 0
-	nextSquareHorizontal %pointer 18 #17(camp) + 1(inicial column)
-	paintLine %cor %pointer 4 1
-	nextSquareHorizontal %pointer 6 #6(next camp)
-	paintLine %cor %pointer 4 1
-	magicMoveEndLine %pointer
-	addi $t0 $t0 1
+	loopNextBlock:
+		paintSquare %cor %pointer 0
+		nextSquareHorizontal %pointer 18 #17(camp) + 1(inicial column)
+		paintLine %cor %pointer 4 1
+		nextSquareHorizontal %pointer 6 #6(next camp)
+		paintLine %cor %pointer 4 1
+		magicMoveEndLine %pointer
+		addi $t0 $t0 1
 	blt $t0 %range loopNextBlock
 	nop
 	popWord $t0
@@ -5310,11 +5310,11 @@ loopNextBlock:
 	nop
 	j end #Invalid key
 	nop
-store:
-	pushFByte $t2 #Sends movement to the FIFO List
-	j end
-	nop
-end:
+	store:
+		pushFByte $t2 #Sends movement to the FIFO List
+		# j end
+		# nop
+	end:
 	popWord $t2
 .end_macro
 
@@ -5343,28 +5343,27 @@ end:
 	nop
 	beq $t2 0x64 SoftDrop #If read 'd'
 	nop
-Spin:
-	callSpin %p1 %p2 %p3 %p4 %state
-	# and $v0 $0 $0 #Set return falg to indicates move made
+	Spin:
+		callSpin %p1 %p2 %p3 %p4 %state
+		# and $v0 $0 $0 #Set return falg to indicates move made
 	j end
 	nop
-Left:
-	moveLeft %p1 %p2 %p3 %p4
-	#and $v0 $0 $0 #Set return falg to indicates move made
+	Left:
+		moveLeft %p1 %p2 %p3 %p4
+		#and $v0 $0 $0 #Set return falg to indicates move made
 	j end
 	nop
-Right:
-	moveDown %p1 %p2 %p3 %p4
-	#and $v0 $0 $0 #Set return falg to indicates move made
+	Right:
+		moveDown %p1 %p2 %p3 %p4
+		#and $v0 $0 $0 #Set return falg to indicates move made
 	j end
 	nop
-SoftDrop:
-	moveRight %p1 %p2 %p3 %p4
-	#and $v0 $0 $0 #Set return falg to indicates move made
-#	j end #No need for this Jump
-# nop
-
-end:
+	SoftDrop:
+		moveRight %p1 %p2 %p3 %p4
+		#and $v0 $0 $0 #Set return falg to indicates move made
+	#	j end #No need for this Jump
+	# nop
+	end:
 	popWord $t2
 .end_macro
 
@@ -5374,6 +5373,7 @@ end:
 	pushWord $t3
 	pushWord $t4
 
+	#test1:
 	and $t3 %p1 %p1 #Copy the pointer
 	nextSquareVertical $t3 1
 	isBlockFree $t3 #Returns 0 if block is free
@@ -5387,9 +5387,9 @@ end:
 	nop
 
 	test2:
-	and $t3 %p2 %p2 #Copy the pointer
-	nextSquareVertical $t3 1
-	isBlockFree $t3 #Returns 0 if block is free
+		and $t3 %p2 %p2 #Copy the pointer
+		nextSquareVertical $t3 1
+		isBlockFree $t3 #Returns 0 if block is free
 	beq $t3 %p1 test3 #A piece can't be traped but itself
 	nop
 	beq $t3 %p3 test3 #A piece can't be traped but itself
@@ -5400,9 +5400,9 @@ end:
 	nop
 
 	test3:
-	and $t3 %p3 %p3 #Copy the pointer
-	nextSquareVertical $t3 1
-	isBlockFree $t3 #Returns 0 if block is free
+		and $t3 %p3 %p3 #Copy the pointer
+		nextSquareVertical $t3 1
+		isBlockFree $t3 #Returns 0 if block is free
 	beq $t3 %p1 test4 #A piece can't be traped but itself
 	nop
 	beq $t3 %p2 test4 #A piece can't be traped but itself
@@ -5413,9 +5413,9 @@ end:
 	nop
 
 	test4:
-	and $t3 %p4 %p4 #Copy the pointer
-	nextSquareVertical $t3 1
-	isBlockFree $t3 #Returns 0 if block is free
+		and $t3 %p4 %p4 #Copy the pointer
+		nextSquareVertical $t3 1
+		isBlockFree $t3 #Returns 0 if block is free
 	beq $t3 %p1 outTests #A piece can't be traped but itself
 	nop
 	beq $t3 %p2 outTests #A piece can't be traped but itself
@@ -5426,29 +5426,29 @@ end:
 	nop
 
 	outTests:
-	lw $t2 8(%p1) #(2*4) Get Light
-	lw $t3 2104(%p1) #(16*32*4) + (14*4)Get Dark
-	lw $t4 4112(%p1) #(16*32*4*2) + (4*4)Get Color
+		lw $t2 8(%p1) #(2*4) Get Light
+		lw $t3 2104(%p1) #(16*32*4) + (14*4)Get Dark
+		lw $t4 4112(%p1) #(16*32*4*2) + (4*4)Get Color
 
-	paintSquare $0 %p1 0
-	paintSquare $0 %p2 0
-	paintSquare $0 %p3 0
-	paintSquare $0 %p4 0
-	nextSquareVertical %p1 1
-	nextSquareVertical %p2 1
-	nextSquareVertical %p3 1
-	nextSquareVertical %p4 1
-	paintBlock $t4 $t2 $t3 %p1 0
-	paintBlock $t4 $t2 $t3 %p2 0
-	paintBlock $t4 $t2 $t3 %p3 0
-	paintBlock $t4 $t2 $t3 %p4 0
+		paintSquare $0 %p1 0
+		paintSquare $0 %p2 0
+		paintSquare $0 %p3 0
+		paintSquare $0 %p4 0
+		nextSquareVertical %p1 1
+		nextSquareVertical %p2 1
+		nextSquareVertical %p3 1
+		nextSquareVertical %p4 1
+		paintBlock $t4 $t2 $t3 %p1 0
+		paintBlock $t4 $t2 $t3 %p2 0
+		paintBlock $t4 $t2 $t3 %p3 0
+		paintBlock $t4 $t2 $t3 %p4 0
 
-	and $v0 $0 $0 #Set return value to success
+		and $v0 $0 $0 #Set return value to success
 	j end
 	nop
-fail:
-	ori $v0 $0 1
-end:
+	fail:
+		ori $v0 $0 1
+	end:
 	popWord $t4
 	popWord $t3
 	popWord $t2
@@ -5460,6 +5460,7 @@ end:
 	pushWord $t3
 	pushWord $t4
 
+	#test1:
 	and $t3 %p1 %p1 #Copy the pointer
 	nextSquareHorizontal $t3 1
 	isBlockFree $t3 #Returns 0 if block is free
@@ -5473,9 +5474,9 @@ end:
 	nop
 
 	test2:
-	and $t3 %p2 %p2 #Copy the pointer
-	nextSquareHorizontal $t3 1
-	isBlockFree $t3 #Returns 0 if block is free
+		and $t3 %p2 %p2 #Copy the pointer
+		nextSquareHorizontal $t3 1
+		isBlockFree $t3 #Returns 0 if block is free
 	beq $t3 %p1 test3 #A piece can't be traped but itself
 	nop
 	beq $t3 %p3 test3 #A piece can't be traped but itself
@@ -5486,9 +5487,9 @@ end:
 	nop
 
 	test3:
-	and $t3 %p3 %p3 #Copy the pointer
-	nextSquareHorizontal $t3 1
-	isBlockFree $t3 #Returns 0 if block is free
+		and $t3 %p3 %p3 #Copy the pointer
+		nextSquareHorizontal $t3 1
+		isBlockFree $t3 #Returns 0 if block is free
 	beq $t3 %p1 test4 #A piece can't be traped but itself
 	nop
 	beq $t3 %p2 test4 #A piece can't be traped but itself
@@ -5500,9 +5501,9 @@ end:
 
 
 	test4:
-	and $t3 %p4 %p4 #Copy the pointer
-	nextSquareHorizontal $t3 1
-	isBlockFree $t3 #Returns 0 if block is free
+		and $t3 %p4 %p4 #Copy the pointer
+		nextSquareHorizontal $t3 1
+		isBlockFree $t3 #Returns 0 if block is free
 	beq $t3 %p1 outTests #A piece can't be traped but itself
 	nop
 	beq $t3 %p2 outTests #A piece can't be traped but itself
@@ -5513,29 +5514,29 @@ end:
 	nop
 
 	outTests:
-	lw $t2 8(%p1) #(2*4) Get Light
-	lw $t3 2104(%p1) #(16*32*4) + (14*4)Get Dark
-	lw $t4 4112(%p1) #(16*32*4*2) + (4*4)Get Color
+		lw $t2 8(%p1) #(2*4) Get Light
+		lw $t3 2104(%p1) #(16*32*4) + (14*4)Get Dark
+		lw $t4 4112(%p1) #(16*32*4*2) + (4*4)Get Color
 
-	paintSquare $0 %p1 0
-	paintSquare $0 %p2 0
-	paintSquare $0 %p3 0
-	paintSquare $0 %p4 0
-	nextSquareHorizontal %p1 1
-	nextSquareHorizontal %p2 1
-	nextSquareHorizontal %p3 1
-	nextSquareHorizontal %p4 1
-	paintBlock $t4 $t2 $t3 %p1 0
-	paintBlock $t4 $t2 $t3 %p2 0
-	paintBlock $t4 $t2 $t3 %p3 0
-	paintBlock $t4 $t2 $t3 %p4 0
+		paintSquare $0 %p1 0
+		paintSquare $0 %p2 0
+		paintSquare $0 %p3 0
+		paintSquare $0 %p4 0
+		nextSquareHorizontal %p1 1
+		nextSquareHorizontal %p2 1
+		nextSquareHorizontal %p3 1
+		nextSquareHorizontal %p4 1
+		paintBlock $t4 $t2 $t3 %p1 0
+		paintBlock $t4 $t2 $t3 %p2 0
+		paintBlock $t4 $t2 $t3 %p3 0
+		paintBlock $t4 $t2 $t3 %p4 0
 
-	and $v0 $0 $0 #Set return value to success
+		and $v0 $0 $0 #Set return value to success
 	j end
 	nop
-fail:
-	ori $v0 $0 1
-end:
+	fail:
+		ori $v0 $0 1
+	end:
 	popWord $t4
 	popWord $t3
 	popWord $t2
@@ -5547,6 +5548,7 @@ end:
 	pushWord $t3
 	pushWord $t4
 
+	#test1:
 	and $t3 %p1 %p1 #Copy the pointer
 	previousSquareHorizontal $t3 1
 	isBlockFree $t3 #Returns 0 if block is free
@@ -5560,9 +5562,9 @@ end:
 	nop
 
 	test2:
-	and $t3 %p2 %p2 #Copy the pointer
-	previousSquareHorizontal $t3 1
-	isBlockFree $t3 #Returns 0 if block is free
+		and $t3 %p2 %p2 #Copy the pointer
+		previousSquareHorizontal $t3 1
+		isBlockFree $t3 #Returns 0 if block is free
 	beq $t3 %p1 test3 #A piece can't be traped but itself
 	nop
 	beq $t3 %p3 test3 #A piece can't be traped but itself
@@ -5573,9 +5575,9 @@ end:
 	nop
 
 	test3:
-	and $t3 %p3 %p3 #Copy the pointer
-	previousSquareHorizontal $t3 1
-	isBlockFree $t3 #Returns 0 if block is free
+		and $t3 %p3 %p3 #Copy the pointer
+		previousSquareHorizontal $t3 1
+		isBlockFree $t3 #Returns 0 if block is free
 	beq $t3 %p1 test4 #A piece can't be traped but itself
 	nop
 	beq $t3 %p2 test4 #A piece can't be traped but itself
@@ -5586,9 +5588,9 @@ end:
 	nop
 
 	test4:
-	and $t3 %p4 %p4 #Copy the pointer
-	previousSquareHorizontal $t3 1
-	isBlockFree $t3 #Returns 0 if block is free
+		and $t3 %p4 %p4 #Copy the pointer
+		previousSquareHorizontal $t3 1
+		isBlockFree $t3 #Returns 0 if block is free
 	beq $t3 %p1 endTestes #A piece can't be traped but itself
 	nop
 	beq $t3 %p2 endTestes #A piece can't be traped but itself
@@ -5599,29 +5601,29 @@ end:
 	nop
 
 	endTestes:
-	lw $t2 8(%p1) #(2*4) Get Light
-	lw $t3 2104(%p1) #(16*32*4) + (14*4)Get Dark
-	lw $t4 4112(%p1) #(16*32*4*2) + (4*4)Get Color
+		lw $t2 8(%p1) #(2*4) Get Light
+		lw $t3 2104(%p1) #(16*32*4) + (14*4)Get Dark
+		lw $t4 4112(%p1) #(16*32*4*2) + (4*4)Get Color
 
-	paintSquare $0 %p1 0
-	paintSquare $0 %p2 0
-	paintSquare $0 %p3 0
-	paintSquare $0 %p4 0
-	previousSquareHorizontal %p1 1
-	previousSquareHorizontal %p2 1
-	previousSquareHorizontal %p3 1
-	previousSquareHorizontal %p4 1
-	paintBlock $t4 $t2 $t3 %p1 0
-	paintBlock $t4 $t2 $t3 %p2 0
-	paintBlock $t4 $t2 $t3 %p3 0
-	paintBlock $t4 $t2 $t3 %p4 0
+		paintSquare $0 %p1 0
+		paintSquare $0 %p2 0
+		paintSquare $0 %p3 0
+		paintSquare $0 %p4 0
+		previousSquareHorizontal %p1 1
+		previousSquareHorizontal %p2 1
+		previousSquareHorizontal %p3 1
+		previousSquareHorizontal %p4 1
+		paintBlock $t4 $t2 $t3 %p1 0
+		paintBlock $t4 $t2 $t3 %p2 0
+		paintBlock $t4 $t2 $t3 %p3 0
+		paintBlock $t4 $t2 $t3 %p4 0
 
-	and $v0 $0 $0
+		and $v0 $0 $0
 	j end
 	nop
-fail:
-	ori $v0 $0 1
-end:
+	fail:
+		ori $v0 $0 1
+	end:
 	popWord $t4
 	popWord $t3
 	popWord $t2
@@ -5650,32 +5652,32 @@ end:
 
 	callBlue:
 		spinBlue %p1 %p2 %p3 %p4 %state
-		j end
-		nop
+	j end
+	nop
 	callPurple:
 		spinPurple %p1 %p2 %p3 %p4 %state
-		j end
-		nop
+	j end
+	nop
 	callOrange:
 		spinOrange %p1 %p2 %p3 %p4 %state
-		j end
-		nop
+	j end
+	nop
 	callGreen:
 		spinGreen %p1 %p2 %p3 %p4 %state
-		j end
-		nop
+	j end
+	nop
 	callPink:
 		spinPink %p1 %p2 %p3 %p4 %state
-		j end
-		nop
+	j end
+	nop
 	callYellow:
 		spinYellow %p1 %p2 %p3 %p4 %state
-		j end
-		nop
+	j end
+	nop
 	callWhite:
 		spinWhite %p1 %p2 %p3 %p4 %state
-		# j end
-		# nop
+	# j end
+	# nop
 	end:
 	popWord $t0
 .end_macro
@@ -5711,8 +5713,8 @@ end:
 		paintBlock $t2 $t3 $t4 %p3 0
 		ori %state $0 2 #Set State
 		and $v0 $0 $0 #Set return value to success
-		j end
-		nop
+	j end
+	nop
 	state2:
 		and $t5 %p1 %p1 #Copy pointer
 		addi $t5 $t5 -64 #previousSquareHorizontal
@@ -5725,8 +5727,8 @@ end:
 		paintBlock $t2 $t3 $t4 %p1 0
 		ori %state $0 3 #Set State
 		and $v0 $0 $0 #Set return value to success
-		j end
-		nop
+	j end
+	nop
 	state3:
 		and $t5 %p4 %p4 #Copy pointer
 		addi $t5 $t5 -64 #previousSquareHorizontal
@@ -5739,8 +5741,8 @@ end:
 		paintBlock $t2 $t3 $t4 %p4 0
 		ori %state $0 4 #Set State
 		and $v0 $0 $0 #Set return value to success
-		j end
-		nop
+	j end
+	nop
 	state4:
 		and $t5 %p3 %p3 #Copy pointer
 		addi $t5 $t5 64 #nextSquareHorizontal
@@ -5761,8 +5763,8 @@ end:
 
 		ori %state $0 1 #Set State
 		and $v0 $0 $0 #Set return value to success
-		j end
-		nop
+	j end
+	nop
 	fail:
 		ori $v0 $0 1
 	end:
@@ -5818,8 +5820,8 @@ end:
 
 		ori %state $0 2 #Set State
 		and $v0 $0 $0 #Set return value to success
-		j end
-		nop
+	j end
+	nop
 	state2:
 		and $t5 %p1 %p1 #Copy pointer
 		addi $t5 $t5 32768 #nextSquareVertical
@@ -5850,8 +5852,8 @@ end:
 
 		ori %state $0 1 #Set State
 		and $v0 $0 $0 #Set return value to success
-		j end
-		nop
+	j end
+	nop
 	fail:
 		ori $v0 $0 1
 	end:
@@ -5911,8 +5913,8 @@ end:
 
 		ori %state $0 2 #Set State
 		and $v0 $0 $0 #Set return value to success
-		j end
-		nop
+	j end
+	nop
 	state2:
 		and $t5 %p1 %p1 #Copy Pointer
 		addi $t5 $t5 -32768
@@ -5942,8 +5944,8 @@ end:
 
 		ori %state $0 3 #Set State
 		and $v0 $0 $0 #Set return value to success
-		j end
-		nop
+	j end
+	nop
 	state3:
 		and $t5 %p1 %p1 #Copy Pointer
 		addi $t5 $t5 64
@@ -5973,8 +5975,8 @@ end:
 
 		ori %state $0 4 #Set State
 		and $v0 $0 $0 #Set return value to success
-		j end
-		nop
+	j end
+	nop
 	state4:
 		and $t5 %p1 %p1 #Copy Pointer
 		addi $t5 $t5 32768
@@ -6004,8 +6006,8 @@ end:
 
 		ori %state $0 1 #Set State
 		and $v0 $0 $0 #Set return value to success
-		j end
-		nop
+	j end
+	nop
 
 	fail:
 		ori $v0 $0 1
@@ -6066,8 +6068,8 @@ end:
 
 		ori %state $0 2 #Set State
 		and $v0 $0 $0 #Set return value to success
-		j end
-		nop
+	j end
+	nop
 	state2:
 		and $t5 %p1 %p1 #Copy Pointer
 		addi $t5 $t5 -32768
@@ -6097,8 +6099,8 @@ end:
 
 		ori %state $0 3 #Set State
 		and $v0 $0 $0 #Set return value to success
-		j end
-		nop
+	j end
+	nop
 	state3:
 		and $t5 %p1 %p1 #Copy Pointer
 		addi $t5 $t5 -64
@@ -6128,8 +6130,8 @@ end:
 
 		ori %state $0 4 #Set State
 		and $v0 $0 $0 #Set return value to success
-		j end
-		nop
+	j end
+	nop
 	state4:
 		and $t5 %p1 %p1 #Copy Pointer
 		addi $t5 $t5 32768
@@ -6159,8 +6161,8 @@ end:
 
 		ori %state $0 1 #Set State
 		and $v0 $0 $0 #Set return value to success
-		j end
-		nop
+	j end
+	nop
 
 	fail:
 		ori $v0 $0 1
@@ -6211,8 +6213,8 @@ end:
 
 		ori %state $0 2 #Set State
 		and $v0 $0 $0 #Set return value to success
-		j end
-		nop
+	j end
+	nop
 	state2:
 		and $t5 %p1 %p1
 		addi $t5 $t5 32768
@@ -6234,8 +6236,8 @@ end:
 
 		ori %state $0 1 #Set State
 		and $v0 $0 $0 #Set return value to success
-		j end
-		nop
+	j end
+	nop
 	fail:
 		ori $v0 $0 1
 	end:
@@ -6285,8 +6287,8 @@ end:
 
 		ori %state $0 2 #Set State
 		and $v0 $0 $0 #Set return value to success
-		j end
-		nop
+	j end
+	nop
 	state2:
 		and $t5 %p1 %p1
 		addi $t5 $t5 32768
@@ -6308,8 +6310,8 @@ end:
 
 		ori %state $0 1 #Set State
 		and $v0 $0 $0 #Set return value to success
-		j end
-		nop
+	j end
+	nop
 	fail:
 		ori $v0 $0 1
 	end:
