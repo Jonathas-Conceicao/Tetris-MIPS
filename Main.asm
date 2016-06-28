@@ -6695,7 +6695,7 @@ main:
 	and $s1 $gp $gp #Pointer to block
 	nextSquareVertical $s1 1
 	nextSquareHorizontal $s1 9 #Set position of inicial block
-and $s0 $0 $0
+	and $s0 $0 $0 #Score Counter
 	playLoop:
 		and $a0 $s1 $s1 #Pointer to piece Start
 		ori $v0 $0 1
@@ -6712,22 +6712,22 @@ and $s0 $0 $0
 		ori $a0 $gp 983104 #(16*32*16*30*4)+(16*4) Points to fist block in last line of the game area
 		jal cleanFullBlockLines# $a0
 		nop
-		add $s0 $s0 $v0
+		add $s0 $s0 $v0 #Score Counter
 
 	j playLoop
 	nop
-gameOver:
+	gameOver:
 ori $v0 $0 0xA
 syscall #End the game
 
-	GetPiece:
+GetPiece:
 	pushWord $t2
 	pushWord $t3
 	add $t2 $gp 132640 #(((16×32×16)×4)+(16×24)+8)×4
 	#ori $t3 $0 0x5182FF #Paint's something to check adress
 	#paintSquare $t3 $t2 0
 	lw $t3 8($t2) #Get Block on Next Areas
-	
+
 	#Code to clean Next Block Area
 	pushWord $t2
 	add $t2 $gp 99712 #(((16×32×16)×3)+(16×22))×4
@@ -6798,6 +6798,7 @@ syscall #End the game
 		#j GetEnd
 		#nop
 	GetEnd:
+	pushWord $v0 #Sames the return to the GameOver Test
 	pushWord $a0 #Saves the pointer to the piece on the scream
 	pushWord $a1
 	pushWord $a2
@@ -6811,40 +6812,40 @@ syscall #End the game
 	popWord $a2
 	popWord $a1
 	popWord $a0 #Get back the pointer to the piece
-
+	popWord $v0
 	popWord $t3
 	popWord $t2
-	jr $ra
-	nop
+jr $ra
+nop
 
 #Subrotine to generate a random piece
 #Takes $a0 as argument to creat a piece at that point
 #Returns 4 pointers in $a0 to $a3 to the piece
 #Returns 1 at $v0 if fail to creat a piece
-	GeneratePiece:
-		pushWord $t0
-		pushWord $a0
-		ori $v0 $0 41 #Code to random number
-		ori $t0 $0 7
-		syscall #Generates a random number and saves on $a0
-		divu $a0 $t0 #Mod 7 and loses the sing
-		mfhi $t0
-		popWord $a0
+GeneratePiece:
+	pushWord $t0
+	pushWord $a0
+	ori $v0 $0 41 #Code to random number
+	ori $t0 $0 7
+	syscall #Generates a random number and saves on $a0
+	divu $a0 $t0 #Mod 7 and loses the sing
+	mfhi $t0
+	popWord $a0
 
-		beq $t0 0 green
-		nop
-		beq $t0 1 pink
-		nop
-		beq $t0 2 blue
-		nop
-		beq $t0 3 yellow
-		nop
-		beq $t0 4 white
-		nop
-		beq $t0 5 orange
-		nop
-		beq $t0 6 purple
-		nop
+	beq $t0 0 green
+	nop
+	beq $t0 1 pink
+	nop
+	beq $t0 2 blue
+	nop
+	beq $t0 3 yellow
+	nop
+	beq $t0 4 white
+	nop
+	beq $t0 5 orange
+	nop
+	beq $t0 6 purple
+	nop
 
 	green:
 		greenPiece $a0 $a1 $a2 $a3
@@ -6876,37 +6877,36 @@ syscall #End the game
 		#nop
 	GenEnd:
 	popWord $t0
-	jr $ra
-	nop
+jr $ra
+nop
 
 #Subrotine to move the piece
 MovePiece: #Takes 5 arguments, the pointers to the piece($a0 to a4) and the piece state($v1)
 	startFila #Start's FIFO List to store movements
 	and $t0 $0 $0
-
-loop:
-	salvarMovimento
-	addi $t0 $t0 1
-	bgt $t0 19999 autoMove #Control time to move
+	loop:
+		salvarMovimento
+		addi $t0 $t0 1
+		bgt $t0 19999 autoMove #Control time to move
+		nop
+		salvarMovimento
+		mover $a0 $a1 $a2 $a3 $v1
+		#salvarMovimento
+		beq $v0 1 loop #If no move was made jump
+		nop
+		addi $t0 $t0 9999 #If move was made increment to drop a little faster
+	j loop
 	nop
-	salvarMovimento
-	mover $a0 $a1 $a2 $a3 $v1
-	#salvarMovimento
-	beq $v0 1 loop #If no move was made jump
+	autoMove:
+		salvarMovimento
+		add $t0 $0 $0
+		moveDown $a0 $a1 $a2 $a3
+		salvarMovimento
+		bne $v0 $0 stop	# if $v0 != 0 then
+		nop
+	j loop
 	nop
-	addi $t0 $t0 9999 #If move was made increment to drop a little faster
-j loop
-nop
-autoMove:
-	salvarMovimento
-	add $t0 $0 $0
-	moveDown $a0 $a1 $a2 $a3
-	salvarMovimento
-	bne $v0 $0 stop	# if $v0 != 0 then
-	nop
-j loop
-nop
-stop:
+	stop:
 jr $ra
 nop
 
@@ -6950,66 +6950,66 @@ cleanFullBlockLines:# (%pointer)
 
   and $v0 $0 $0
   #Check if Line is Full
-CheckIfFull:
-  pushWord $a0
-  and $t2 $a0 $a0 #Copy the pointer
-  and $t1 $0 $0 #Starts Square counter
-	#ori $t0 $gp 983104 #(16*32*16*30*4)+(16*4) Points to fist block in last line of the game area
-  testLoop:
-    lw $t0 16($t2) #Load value from block
-    beq $t0 $0 LookForNewLines #Jump if there's no block
-    nop
-    addi $t1 $t1 1
-    beq $t1 17 ScoreLine #If all lines have blocks
-    nop
-    addi $t2 $t2 64 #(16*4) Goes to nextSquare
-  j testLoop
-  nop
-ScoreLine:
-	addi $v0 $v0 1
-	bne $a0 269451328 StartMoving
-	nop
-		addi $v0 $v0 9 #If base line was completed the score is highter 
-StartMoving: #Starts moving a new line
-  and $t1 $0 $0 #Block Column Counter
-  and $t3 $0 $0 #Block Line Counter
-  and $t4 $0 $0  #Black Blocks Counter
-  and $t2 $a0 $a0
-  paintLine $0 $t2 17 0 #Clean this Line
-  droppingLine:
-    addi $t3 $t3 1
-    droppingLineLine:
-      lw $t0 -32768($t2) #previousSquareVertical
-      sw $t0 0($t2) #Drops
-      addi $t2 $t2 4 #Next Pixel
-      addi $t1 $t1 1
-			or $t4 $t4 $t0
-			blt $t1 272 droppingLineLine #(16*17)Goes til the end of the line
-      nop
-		beq $t4 $0 LookForOTHERLines #If at this point $t4 is still 0, that means that only black pixels was found and theres no need to keep dropping blocks
+	CheckIfFull:
+	  pushWord $a0
+	  and $t2 $a0 $a0 #Copy the pointer
+	  and $t1 $0 $0 #Starts Square counter
+		#ori $t0 $gp 983104 #(16*32*16*30*4)+(16*4) Points to fist block in last line of the game area
+	  testLoop:
+	    lw $t0 16($t2) #Load value from block
+	    beq $t0 $0 LookForNewLines #Jump if there's no block
+	    nop
+	    addi $t1 $t1 1
+	    beq $t1 17 ScoreLine #If all lines have blocks
+	    nop
+	    addi $t2 $t2 64 #(16*4) Goes to nextSquare
+	  j testLoop
+	  nop
+		ScoreLine:
+			addi $v0 $v0 1
+			bne $a0 269451328 StartMoving
+			nop
+			addi $v0 $v0 9 #If base line was completed the score is highter
+		StartMoving: #Starts moving a new line
+		  and $t1 $0 $0 #Block Column Counter
+		  and $t3 $0 $0 #Block Line Counter
+		  and $t4 $0 $0  #Black Blocks Counter
+		  and $t2 $a0 $a0
+		  paintLine $0 $t2 17 0 #Clean this Line
+		  droppingLine:
+		    addi $t3 $t3 1
+		    droppingLineLine:
+		      lw $t0 -32768($t2) #previousSquareVertical
+		      sw $t0 0($t2) #Drops
+		      addi $t2 $t2 4 #Next Pixel
+		      addi $t1 $t1 1
+					or $t4 $t4 $t0
+				blt $t1 272 droppingLineLine #(16*17)Goes til the end of the line
+	      nop
+				beq $t4 $0 LookForOTHERLines #If at this point $t4 is still 0, that means that only black pixels was found and theres no need to keep dropping blocks
+				nop
+				and $t1 $0 $0
+		    addi $t2 $t2 -1088 #(16*17*4)Goes to the start of the line
+		    addi $t2 $t2 2048 #NextPixelLine
+	    blt $t3 16 droppingLine
+	    nop
+		  #FullLine Droped
+		  addi $a0 $a0 -32768 #previousSquareVertical
+		  addi $t0 $gp 32832 #((16×32×16)+16)×4 First Line in game scream
+	  bgt $a0 $t0 StartMoving
+	  nop #Can't go to the end from here, because more the one lien can be completed at a time
+	LookForOTHERLines: #As the line has been moved already need to use base line to check if there's any match
+		popWord $a0
+	  addi $t0 $gp 32832 #((16×32×16)+16)×4 First Line in game scream
+		bgt $a0 $t0 CheckIfFull
 		nop
-		and $t1 $0 $0
-    addi $t2 $t2 -1088 #(16*17*4)Goes to the start of the line
-    addi $t2 $t2 2048 #NextPixelLine
-    blt $t3 16 droppingLine
-    nop
-  #FullLine Droped
-  addi $a0 $a0 -32768 #previousSquareVertical
-  addi $t0 $gp 32832 #((16×32×16)+16)×4 First Line in game scream
-  bgt $a0 $t0 StartMoving
-  nop #Can't go to the end from here, because more the one lien can be completed at a time
-LookForOTHERLines: #As the line has been moved already need to use base line to check if there's any match
-	popWord $a0
-  addi $t0 $gp 32832 #((16×32×16)+16)×4 First Line in game scream
-	bgt $a0 $t0 CheckIfFull
-	nop
-LookForNewLines:
-  #Looking for new Lines to be completed
-  popWord $a0
-	addi $a0 $a0 -32768 #(16x32x16)x4 previousSquareVertical
-  addi $t0 $gp 32832 #((16×32×16)+16)×4 First Line in game scream
-  bgt $a0 $t0 CheckIfFull
-  nop
+	LookForNewLines:
+	  #Looking for new Lines to be completed
+	  popWord $a0
+		addi $a0 $a0 -32768 #(16x32x16)x4 previousSquareVertical
+	  addi $t0 $gp 32832 #((16×32×16)+16)×4 First Line in game scream
+	  bgt $a0 $t0 CheckIfFull
+	  nop
 
   popWord $t4
   popWord $t3
