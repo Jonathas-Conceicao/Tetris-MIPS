@@ -18,19 +18,19 @@
 
 #Start the FIFO List Struct
 .macro startFila #Takes no arguments;
-	la $t8 0x10000000 #Set Start of the List
-	and $t7 $t8 $t8
+	la $t9 0x10000000 #Set Start of the List
+	and $t8 $t9 $t9
 .end_macro
 
 #Teste of if FIFO List is empty
 .macro isFEmpty #$v0: Returns 0 if FIFO List is empty and 1 otherwise;
-	sne $v0 $t8 0x10000000
+	sne $v0 $t9 0x10000000
 .end_macro
 
 #Saves data to the FIFO List
 .macro pushFByte (%dado) #$1: Data to be saved;
-	addi $t8 $t8 1
-	sb %dado ($t8)
+	addi $t9 $t9 1
+	sb %dado ($t9)
 .end_macro
 
 #Get a data from the FIFO List
@@ -38,20 +38,20 @@
 	isFEmpty
 	beq $v0 $0 end #Does nothing if FIFO List is empty
 	nop
-	lb %dado 1($t7)
+	lb %dado 1($t8)
 	pushWord $t0
 	pushWord %dado
-	pushWord $t7 #Saves the pointer
+	pushWord $t8 #Saves the pointer
 	loopPopF: #loop to move the elements in the FIFO List
-		lb $t0 2($t7) #Get Next Value
-		sb $t0 1($t7) #Store here
-		addi $t7 $t7 1
-	blt $t7 $t8 loopPopF
+		lb $t0 2($t8) #Get Next Value
+		sb $t0 1($t8) #Store here
+		addi $t8 $t8 1
+	blt $t8 $t9 loopPopF
 	nop
-	popWord $t7
+	popWord $t8
 	popWord %dado
 	popWord $t0
-	addi $t8 $t8 -1 #Updates the last FIFO List position
+	addi $t9 $t9 -1 #Updates the last FIFO List position
 	end:
 .end_macro
 
@@ -6713,12 +6713,15 @@
 		and %p3 $t5 $t5
 		paintBlock $t2 $t3 $t4 %p3 0
 		#Reorganaize the pointers back
-		and $t5 %p4 %p4
-		and %p4 %p1 %p1
-		and %p1 $t5 $t5
-		and $t5 %p4 %p4
-		and %p4 %p3 %p3
-		and %p3 $t5 $t5
+		bne $t7 $0 esterEgg #Jumps the pointer fix if ester egg is on
+		nop
+			and $t5 %p4 %p4
+			and %p4 %p1 %p1
+			and %p1 $t5 $t5
+			and $t5 %p4 %p4
+			and %p4 %p3 %p3
+			and %p3 $t5 $t5
+		esterEgg:
 
 		ori %state $0 1 #Set State
 		and $v0 $0 $0 #Set return value to success
@@ -7650,15 +7653,16 @@
 main:
 	jal printBaseInterface
 	nop
-	and $s2 $v0 $v0 #Score Box Pointer
-	and $s3 $v1 $v1 #Lines Box Pointer
+	and $s3 $v0 $v0 #Score Box Pointer
+	and $s4 $v1 $v1 #Lines Box Pointer
 	addi $s4 $gp 295376 #((16×32×16×9)+(16×7)+4)×4 Pointer to Game Over message area
 	addi $s5 $gp 459200 #((16×32×16×14)+(16×7))×4 Pointer to Menu Area
-	and $s1 $gp $gp #Pointer to block
-	nextSquareVertical $s1 1
-	nextSquareHorizontal $s1 9 #Set position of inicial block
-	and $s0 $0 $0 #Score Counter
+	and $s2 $gp $gp #Pointer to block
+	nextSquareVertical $s2 1
+	nextSquareHorizontal $s2 9 #Set position of inicial block
 	MenuLoop:
+		and $s0 $0 $0 #Score Counter
+		and $s1 $0 $0 #Lines Counter
 		and $a0 $s4 $s4
 		and $a1 $s5 $s5
 		and $a2 $0 $0
@@ -7671,8 +7675,8 @@ main:
 		jal clearScream
 		nop
 		playLoop:
-			and $a0 $s1 $s1 #Pointer to piece Start
-			ori $v0 $0 1
+			and $a0 $s2 $s2 #Pointer to piece Start
+			#ori $v0 $0 1
 
 			jal GetPiece
 			nop
@@ -7685,7 +7689,7 @@ main:
 			jal cleanFullBlockLines# $a0
 			nop
 			add $s0 $s0 $v0 #Score Counter
-
+			add $s1 $s1 $v1 #Lines Counter
 		j playLoop
 		nop
 	gameOver:
@@ -7925,6 +7929,7 @@ printMenu:
 	pushWord $t4
 	pushWord $t5
 	pushWord $a1
+	and $t7 $0 $0
 	ori $t2 $0 0xEBD320 #Color
 	ori $t3 $0 0xFFF392 #Light
 	ori $t4 $0 0x8A8A00 #Shadow
@@ -7966,6 +7971,14 @@ printMenu:
 		nop
 		beq $t5 0x73 moveArrowDown #If read 's'
 		nop
+		beq $t5 0x42 activateEsterEgg #If read 'B'
+		nop
+		beq $t5 0x62 activateEsterEgg #If read 'b'
+		nop
+		beq $t5 0x4A activateEsterEgg #If read 'J'
+		nop
+		beq $t5 0x6A activateEsterEgg #If read 'j'
+		nop
 		j InputLoop
 		nop
 	moveArrowUp:
@@ -7984,6 +7997,10 @@ printMenu:
 		addi $a1 $a1 32768
 		printArrow $t2 $t3 $t4 $a1 #Recreats Arrow
 		ori $v0 $0 1 #Set State of Arrow to '0'
+		j InputLoop
+		nop
+	activateEsterEgg:
+		ori $t7 $0 0x1 #Set global control to activate ester egg
 		j InputLoop
 		nop
 	outInputLoop:
@@ -8049,7 +8066,8 @@ cleanFullBlockLines:# (%pointer)
   pushWord $t3
   pushWord $t4
 
-  and $v0 $0 $0
+  and $v0 $0 $0 #Returns Score
+	and $v1 $0 $0 #Returns Lines completed
   #Check if Line is Full
 	CheckIfFull:
 	  pushWord $a0
@@ -8068,6 +8086,7 @@ cleanFullBlockLines:# (%pointer)
 	  nop
 		ScoreLine:
 			addi $v0 $v0 1
+			addi $v1 $v1 1
 			bne $a0 269451328 StartMoving
 			nop
 			addi $v0 $v0 9 #If base line was completed the score is highter
