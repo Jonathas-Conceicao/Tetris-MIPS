@@ -7962,6 +7962,7 @@ nop
 printBaseInterface:
 	la $a0 0x797979 #Gray Border Color
 	#la $s1 0x10000000 #Pointer to the start of the display
+	pushWord $t0
 	and $a1 $gp $gp
 	and $v0 $0 $0 #Space for the Score Pointer
 	and $v1 $0 $0 #Space for the Lines Pointer
@@ -7975,16 +7976,18 @@ printBaseInterface:
 	printCleanLine $a0 $a1 1
 	printScoreLine $a0 $a1
 	printSmallBoxLine $a0 $a1
-	and $t0 $v0 $v0
+	and $t0 $v0 $v0 #Saves score box return
 	printCleanLine $a0 $a1 2
 	printLinesLine $a0 $a1
 	printSmallBoxLine $a0 $a1
-	and $v1 $v0 $v0
-	and $v0 $t1 $t1
+	and $v1 $v0 $v0 #Set Line Box Pointer
+	and $v0 $t0 $t0 #Set Score Box Pointer
 	printCleanLine $a0 $a1 4
 	printLUPSLogo $a0 $a1
 	printCleanLine $a0 $a1 5
 	paintFullLine $a0 $a1 1
+
+	popWord $t0
 jr $ra
 nop
 
