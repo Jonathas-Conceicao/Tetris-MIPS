@@ -7645,6 +7645,45 @@
 	popWord $t2
 .end_macro
 
+.macro printNum (%num, %pt) #num is the number to be printed, and the pointer where to print
+		bge %num 1 tw
+		nop
+		paintOne(%pt, 1)
+		j end
+tw:	bge %num 2 tr
+		nop
+		paintTwo(%pt, 1)
+		j end
+tr:	bge %num 3 fo
+		nop
+		paintThree(%pt, 1)
+		j end
+fo:	bge %num 4 fi
+		nop
+		paintFour(%pt, 1)
+		j end
+fi:	bge %num 5 si
+		nop
+		paintFive(%pt, 1)
+		j end
+si:	bge %num 6 se
+		nop
+		paintSix(%pt, 1)
+		j end
+se:	bge %num 7 ei
+		nop
+		paintSeven(%pt, 1)
+		j end
+ei:	bge %num 8 ni
+		nop
+		paintEight(%pt, 1)
+		j end
+		nop
+ni:	paintNine(%pt, 1)
+		j end
+end: nop
+.end_macro
+
 #############
 # MAIN CODE #
 #############
@@ -7690,6 +7729,10 @@ main:
 			nop
 			add $s0 $s0 $v0 #Score Counter
 			add $s1 $s1 $v1 #Lines Counter
+			jal printScore
+			nop
+		#	jal printNumberLines
+		#	nop
 		j playLoop
 		nop
 	gameOver:
@@ -7700,6 +7743,31 @@ main:
 endGame:
 ori $v0 $0 0xA
 syscall #End the game
+
+printScore: # coloca o score
+	# pushWord $s3
+	# print the higher number
+	div $t4 $s0 1000	#get the first digit
+	printNum $t4 $s3
+	nextSquareHorizontal $s3 1
+	mul $t5 $t4 1000
+	sub $t4 $t4 $t5
+	div $t4 $t4 100 #get the second digit
+	printNum $t4 $s3
+	nextSquareHorizontal $s3 1
+	mul $t5 $t4 100
+	sub $t4 $t4 $t5
+	div $t4 $t4 10
+	printNum $t4 $s3
+	nextSquareHorizontal $s3 1
+	mul $t5 $t4 10
+	sub $t4 $t4 $t5
+	printNum $t4 $s3
+	nextSquareHorizontal $s3 1
+	# popWord $s3
+jr $ra	# back
+
+#printNumberLines:
 
 GetPiece:
 	pushWord $t2
