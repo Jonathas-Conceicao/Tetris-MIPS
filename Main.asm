@@ -7756,7 +7756,7 @@ rep:	j playLoop
 		nop
 	gameOver:
 	ori $t2 $0 0xEBD320
-	printGameOver $t2 $s4
+	printGameOver $t2 $s6
 	j MenuLoop
 	nop
 endGame:
