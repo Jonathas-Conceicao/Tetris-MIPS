@@ -6294,13 +6294,13 @@
 	nop
 	beq $t2 0x61 Left #If read 'a'
 	nop
-	beq $t2 0x53 Right #If read 'S'
+	beq $t2 0x53 Right #If read 'D'
 	nop
-	beq $t2 0x73 Right #If read 's'
+	beq $t2 0x73 Right #If read 'd'
 	nop
-	beq $t2 0x44 SoftDrop #If read 'D'
+	beq $t2 0x44 SoftDrop #If read 'S'
 	nop
-	beq $t2 0x64 SoftDrop #If read 'd'
+	beq $t2 0x64 SoftDrop #If read 's'
 	nop
 	Spin:
 		callSpin %p1 %p2 %p3 %p4 %state
@@ -6335,52 +6335,52 @@
 	#test1:
 	and $t3 %p1 %p1 #Copy the pointer
 	nextSquareVertical $t3 1
-	isBlockFree $t3 #Returns 0 if block is free
 	beq $t3 %p2 test2 #A piece can't be traped but itself
 	nop
 	beq $t3 %p3 test2 #A piece can't be traped but itself
 	nop
 	beq $t3 %p4 test2 #A piece can't be traped but itself
 	nop
+	isBlockFree $t3 #Returns 0 if block is free
 	bne $v0 $0 fail #Dont Move if space isn't free and returns a flag
 	nop
 
 	test2:
 		and $t3 %p2 %p2 #Copy the pointer
 		nextSquareVertical $t3 1
-		isBlockFree $t3 #Returns 0 if block is free
 	beq $t3 %p1 test3 #A piece can't be traped but itself
 	nop
 	beq $t3 %p3 test3 #A piece can't be traped but itself
 	nop
 	beq $t3 %p4 test3 #A piece can't be traped but itself
 	nop
+	isBlockFree $t3 #Returns 0 if block is free
 	bne $v0 $0 fail #Dont Move if space isn't free and returns a flag
 	nop
 
 	test3:
 		and $t3 %p3 %p3 #Copy the pointer
 		nextSquareVertical $t3 1
-		isBlockFree $t3 #Returns 0 if block is free
 	beq $t3 %p1 test4 #A piece can't be traped but itself
 	nop
 	beq $t3 %p2 test4 #A piece can't be traped but itself
 	nop
 	beq $t3 %p4 test4 #A piece can't be traped but itself
 	nop
+	isBlockFree $t3 #Returns 0 if block is free
 	bne $v0 $0 fail #Dont Move if space isn't free and returns a flag
 	nop
 
 	test4:
 		and $t3 %p4 %p4 #Copy the pointer
 		nextSquareVertical $t3 1
-		isBlockFree $t3 #Returns 0 if block is free
 	beq $t3 %p1 outTests #A piece can't be traped but itself
 	nop
 	beq $t3 %p2 outTests #A piece can't be traped but itself
 	nop
 	beq $t3 %p3 outTests #A piece can't be traped but itself
 	nop
+	isBlockFree $t3 #Returns 0 if block is free
 	bne $v0 $0 fail #Dont Move if space isn't free and returns a flag
 	nop
 
@@ -6422,39 +6422,39 @@
 	#test1:
 	and $t3 %p1 %p1 #Copy the pointer
 	nextSquareHorizontal $t3 1
-	isBlockFree $t3 #Returns 0 if block is free
 	beq $t3 %p2 test2 #A piece can't be traped but itself
 	nop
 	beq $t3 %p3 test2 #A piece can't be traped but itself
 	nop
 	beq $t3 %p4 test2 #A piece can't be traped but itself
 	nop
+	isBlockFree $t3 #Returns 0 if block is free
 	bne $v0 $0 fail #Dont Move if space isn't free
 	nop
 
 	test2:
 		and $t3 %p2 %p2 #Copy the pointer
 		nextSquareHorizontal $t3 1
-		isBlockFree $t3 #Returns 0 if block is free
 	beq $t3 %p1 test3 #A piece can't be traped but itself
 	nop
 	beq $t3 %p3 test3 #A piece can't be traped but itself
 	nop
 	beq $t3 %p4 test3 #A piece can't be traped but itself
 	nop
+	isBlockFree $t3 #Returns 0 if block is free
 	bne $v0 $0 fail #Dont Move if space isn't free
 	nop
 
 	test3:
 		and $t3 %p3 %p3 #Copy the pointer
 		nextSquareHorizontal $t3 1
-		isBlockFree $t3 #Returns 0 if block is free
 	beq $t3 %p1 test4 #A piece can't be traped but itself
 	nop
 	beq $t3 %p2 test4 #A piece can't be traped but itself
 	nop
 	beq $t3 %p4 test4 #A piece can't be traped but itself
 	nop
+	isBlockFree $t3 #Returns 0 if block is free
 	bne $v0 $0 fail #Dont Move if space isn't free
 	nop
 
@@ -6462,13 +6462,13 @@
 	test4:
 		and $t3 %p4 %p4 #Copy the pointer
 		nextSquareHorizontal $t3 1
-		isBlockFree $t3 #Returns 0 if block is free
 	beq $t3 %p1 outTests #A piece can't be traped but itself
 	nop
 	beq $t3 %p2 outTests #A piece can't be traped but itself
 	nop
 	beq $t3 %p3 outTests #A piece can't be traped but itself
 	nop
+	isBlockFree $t3 #Returns 0 if block is free
 	bne $v0 $0 fail #Dont Move if space isn't free
 	nop
 
@@ -6510,52 +6510,52 @@
 	#test1:
 	and $t3 %p1 %p1 #Copy the pointer
 	previousSquareHorizontal $t3 1
-	isBlockFree $t3 #Returns 0 if block is free
 	beq $t3 %p2 test2 #A piece can't be traped but itself
 	nop
 	beq $t3 %p3 test2 #A piece can't be traped but itself
 	nop
 	beq $t3 %p4 test2 #A piece can't be traped but itself
 	nop
+	isBlockFree $t3 #Returns 0 if block is free
 	bne $v0 $0 fail #Dont Move if space isn't free
 	nop
 
 	test2:
 		and $t3 %p2 %p2 #Copy the pointer
 		previousSquareHorizontal $t3 1
-		isBlockFree $t3 #Returns 0 if block is free
 	beq $t3 %p1 test3 #A piece can't be traped but itself
 	nop
 	beq $t3 %p3 test3 #A piece can't be traped but itself
 	nop
 	beq $t3 %p4 test3 #A piece can't be traped but itself
 	nop
+	isBlockFree $t3 #Returns 0 if block is free
 	bne $v0 $0 fail #Dont Move if space isn't free
 	nop
 
 	test3:
 		and $t3 %p3 %p3 #Copy the pointer
 		previousSquareHorizontal $t3 1
-		isBlockFree $t3 #Returns 0 if block is free
 	beq $t3 %p1 test4 #A piece can't be traped but itself
 	nop
 	beq $t3 %p2 test4 #A piece can't be traped but itself
 	nop
 	beq $t3 %p4 test4 #A piece can't be traped but itself
 	nop
+	isBlockFree $t3 #Returns 0 if block is free
 	bne $v0 $0 fail #Dont Move if space isn't free
 	nop
 
 	test4:
 		and $t3 %p4 %p4 #Copy the pointer
 		previousSquareHorizontal $t3 1
-		isBlockFree $t3 #Returns 0 if block is free
 	beq $t3 %p1 endTestes #A piece can't be traped but itself
 	nop
 	beq $t3 %p2 endTestes #A piece can't be traped but itself
 	nop
 	beq $t3 %p3 endTestes #A piece can't be traped but itself
 	nop
+	isBlockFree $t3 #Returns 0 if block is free
 	bne $v0 $0 fail #Dont Move if space isn't free
 	nop
 
@@ -7646,42 +7646,55 @@
 .end_macro
 
 .macro printNum (%num, %pt) #num is the number to be printed, and the pointer where to print
-		bge %num 1 tw
-		nop
-		paintOne(%pt, 1)
-		j end
-tw:	bge %num 2 tr
-		nop
-		paintTwo(%pt, 1)
-		j end
-tr:	bge %num 3 fo
-		nop
-		paintThree(%pt, 1)
-		j end
-fo:	bge %num 4 fi
-		nop
-		paintFour(%pt, 1)
-		j end
-fi:	bge %num 5 si
-		nop
-		paintFive(%pt, 1)
-		j end
-si:	bge %num 6 se
-		nop
-		paintSix(%pt, 1)
-		j end
-se:	bge %num 7 ei
-		nop
-		paintSeven(%pt, 1)
-		j end
-ei:	bge %num 8 ni
-		nop
-		paintEight(%pt, 1)
-		j end
-		nop
-ni:	paintNine(%pt, 1)
-		j end
-end: nop
+			bgt %num 0 on
+			nop
+			paintZero(%pt, 0)
+			j end
+			nop
+	on:	bgt %num 1 tw
+			nop
+			paintOne(%pt, 0)
+	j end
+	nop
+	tw:	bgt %num 2 tr
+			nop
+			paintTwo(%pt, 0)
+	j end
+	nop
+	tr:	bgt %num 3 fo
+			nop
+			paintThree(%pt, 0)
+	j end
+	nop
+	fo:	bgt %num 4 fi
+			nop
+			paintFour(%pt, 0)
+	j end
+	nop
+	fi:	bgt %num 5 si
+			nop
+			paintFive(%pt, 0)
+	j end
+	nop
+	si:	bgt %num 6 se
+			nop
+			paintSix(%pt, 0)
+	j end
+	nop
+	se:	bgt %num 7 ei
+			nop
+			paintSeven(%pt, 0)
+	j end
+	nop
+	ei:	bgt %num 8 ni
+			nop
+			paintEight(%pt, 0)
+	j end
+	nop
+	ni:	paintNine(%pt, 0)
+			j end
+			nop
+	end: nop
 .end_macro
 
 #############
@@ -7694,7 +7707,7 @@ main:
 	nop
 	and $s3 $v0 $v0 #Score Box Pointer
 	and $s4 $v1 $v1 #Lines Box Pointer
-	addi $s4 $gp 295376 #((16×32×16×9)+(16×7)+4)×4 Pointer to Game Over message area
+	addi $s6 $gp 295376 #((16×32×16×9)+(16×7)+4)×4 Pointer to Game Over message area
 	addi $s5 $gp 459200 #((16×32×16×14)+(16×7))×4 Pointer to Menu Area
 	and $s2 $gp $gp #Pointer to block
 	nextSquareVertical $s2 1
@@ -7702,7 +7715,7 @@ main:
 	MenuLoop:
 		and $s0 $0 $0 #Score Counter
 		and $s1 $0 $0 #Lines Counter
-		and $a0 $s4 $s4
+		and $a0 $s6 $s6
 		and $a1 $s5 $s5
 		and $a2 $0 $0
 		jal printMenu
@@ -7710,7 +7723,6 @@ main:
 		bne $v0 $0 endGame
 		nop
 
-		ori $a0 $gp 983104 #(16*32*16*30*4)+(16*4) Points to fist block in last line of the game area
 		jal clearScream
 		nop
 		playLoop:
@@ -7724,16 +7736,23 @@ main:
 
 			jal MovePiece
 			nop
-			ori $a0 $gp 983104 #(16*32*16*30*4)+(16*4) Points to fist block in last line of the game area
+			ori $a0 $gp 983104 #(16*32*16*30*4)+(16*4) Points to fist pixel at first block in last line of the game area
 			jal cleanFullBlockLines# $a0
 			nop
+			or $s7 $s0 $zero
+		scorePP:
 			add $s0 $s0 $v0 #Score Counter
-			add $s1 $s1 $v1 #Lines Counter
+			beq $s7 $s0 linePP
+			nop
 			jal printScore
 			nop
-		#	jal printNumberLines
-		#	nop
-		j playLoop
+		linePP:
+			or $s7 $s1 $zero
+			add $s1 $s1 $v1 #Lines Counter
+			beq $s1 $s7 rep
+			jal printNumberLines
+			nop
+rep:	j playLoop
 		nop
 	gameOver:
 	ori $t2 $0 0xEBD320
@@ -7745,33 +7764,72 @@ ori $v0 $0 0xA
 syscall #End the game
 
 printScore: # coloca o score
-	# pushWord $s3
+	pushWord $s3
+	pushWord $s0
+
 	# print the higher number
 	div $t4 $s0 1000	#get the first digit
 	printNum $t4 $s3
 	nextSquareHorizontal $s3 1
-	mul $t5 $t4 1000
-	sub $t4 $t4 $t5
-	div $t4 $t4 100 #get the second digit
+	mul $t4 $t4 1000
+	sub $s0 $s0 $t4
+
+	#print second
+	div $t4 $s0 100
 	printNum $t4 $s3
 	nextSquareHorizontal $s3 1
-	mul $t5 $t4 100
-	sub $t4 $t4 $t5
-	div $t4 $t4 10
+	mul $t4 $t4 100
+	sub $s0 $s0 $t4
+
+	div $t4 $s0 10
 	printNum $t4 $s3
 	nextSquareHorizontal $s3 1
-	mul $t5 $t4 10
-	sub $t4 $t4 $t5
-	printNum $t4 $s3
+	mul $t4 $t4 10
+	sub $s0 $s0 $t4
+
+	printNum $s0 $s3
 	nextSquareHorizontal $s3 1
-	# popWord $s3
+	popWord $s0
+	popWord $s3
 jr $ra	# back
+
+printNumberLines: # coloca as linhas
+	pushWord $s4
+	pushWord $s1
+
+	# print the higher number
+	div $t4 $s1 1000	#get the first digit
+	printNum $t4 $s4
+	nextSquareHorizontal $s4 1
+	mul $t4 $t4 1000
+	sub $s1 $s1 $t4
+
+	#print second
+	div $t4 $s1 100
+	printNum $t4 $s4
+	nextSquareHorizontal $s4 1
+	mul $t4 $t4 100
+	sub $s1 $s1 $t4
+
+	div $t4 $s1 10
+	printNum $t4 $s4
+	nextSquareHorizontal $s4 1
+	mul $t4 $t4 10
+	sub $s1 $s1 $t4
+
+	printNum $s1 $s4
+	nextSquareHorizontal $s4 1
+	popWord $s1
+	popWord $s4
+jr $ra	# back
+
 
 #printNumberLines:
 
 GetPiece:
 	pushWord $t2
 	pushWord $t3
+	backtrack:
 	add $t2 $gp 132640 #(((16×32×16)×4)+(16×24)+8)×4
 	#ori $t3 $0 0x5182FF #Paint's something to check adress
 	#paintSquare $t3 $t2 0
@@ -7816,8 +7874,8 @@ GetPiece:
 		nop
 		popWord $ra
 		popWord $a0
-		j GetPiece #Restarts the function
-		nop
+	j backtrack #Restarts the function
+	nop
 	getBlue:
 		bluePiece $a0 $a1 $a2 $a3
 		j GetEnd
@@ -8006,14 +8064,14 @@ printMenu:
 	ori $t4 $0 0x8A8A00 #Shadow
 
 	pushWord $a1
-	addi $a1 $a1 -64
-	addi $a1 $a1 -32768
+	addi $a1 $a1 -64 #previousSquareHorizontal
+	addi $a1 $a1 -32768 #previousSquareVertical
 	paintLine $0 $a1 6 0
-	addi $a1 $a1 32768
+	addi $a1 $a1 32768 #nextSquareVertical
 	paintLine $0 $a1 6 0
-	addi $a1 $a1 32768
+	addi $a1 $a1 32768 #nextSquareVertical
 	paintLine $0 $a1 6 0
-	addi $a1 $a1 32768
+	addi $a1 $a1 32768 #nextSquareVertical
 	paintLine $0 $a1 6 0
 	popWord $a1
 
@@ -8102,6 +8160,7 @@ clearScream:
 	pushWord $t4
 	and $t2 $0 $0 #Starts Block Counter
 	and $t3 $0 $0 #Starts Lines Counter
+	ori $a0 $gp 983104 #(16*32*16*30*4)+(16*4) Points to fist block in last line of the game area
 	pushWord $a0
 	# clearLine:
 	clearLine:
@@ -8209,3 +8268,5 @@ cleanFullBlockLines:# (%pointer)
 	popWord $t0
 jr $ra
 nop
+.data
+enter: .asciiz "\n"
