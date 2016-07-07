@@ -7725,6 +7725,8 @@ main:
 
 		jal clearScream
 		nop
+		resetSmallBox $s3
+		resetSmallBox $s4
 		playLoop:
 			and $a0 $s2 $s2 #Pointer to piece Start
 			#ori $v0 $0 1
@@ -8066,13 +8068,13 @@ printMenu:
 	pushWord $a1
 	addi $a1 $a1 -64 #previousSquareHorizontal
 	addi $a1 $a1 -32768 #previousSquareVertical
-	paintLine $0 $a1 6 0
+	paintLine $0 $a1 7 0
 	addi $a1 $a1 32768 #nextSquareVertical
-	paintLine $0 $a1 6 0
+	paintLine $0 $a1 7 0
 	addi $a1 $a1 32768 #nextSquareVertical
-	paintLine $0 $a1 6 0
+	paintLine $0 $a1 7 0
 	addi $a1 $a1 32768 #nextSquareVertical
-	paintLine $0 $a1 6 0
+	paintLine $0 $a1 7 0
 	popWord $a1
 
 	pushWord $a1
@@ -8268,5 +8270,3 @@ cleanFullBlockLines:# (%pointer)
 	popWord $t0
 jr $ra
 nop
-.data
-enter: .asciiz "\n"
