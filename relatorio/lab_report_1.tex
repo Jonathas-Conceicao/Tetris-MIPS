@@ -37,7 +37,7 @@
 %	DOCUMENT INFORMATION
 %----------------------------------------------------------------------------------------
 
-\title{Inplementação do Tetris \\ em Assembly MIPS \\ Utlizando Simulador MARS} % Title
+\title{Implementação do Tetris \\ em Assembly MIPS \\ Utilizando Simulador MARS} % Title
 
 \author{Jonathas Conceição \\ Lucas Bretana} % Author name
 
@@ -81,7 +81,7 @@ Implementar o clássico jogo russo da década de 80, \textit{Tetris}, em Mips As
 \subsection{Definições} \label{definitions}
 \begin{description}
   \item[Interface:]
-    É proposto a implementação uma interface gráfica utilizando o Bitmap Dispaly do MARS, possuindo em sua interface a area de jogo, bem como pontuação, linhas completadas e proxima peça.
+    É proposto a implementação uma interface gráfica utilizando o Bitmap Dispaly do MARS, possuindo em sua interface a área de jogo, bem como pontuação, linhas completadas e próxima peça.
   \item[Menu:]
     Possuir um menu básico de interação com usuário permitindo começar uma nova partida ou sair do jogo.
   \item[Movimentação:]
@@ -99,7 +99,7 @@ Para este projeto foram utilizados os seguintes recursos presentes no MARS:
   \item \textbf{Macros}, utilizado para simplificar a codificação do projeto.
   \item \textbf{Bitmap Display}, para interface gráfica.
   \item \textbf{Keyboard and Display MMIO Simulator}, para leitura das ações do usuário.
-  \item \textbf{Pseudo Instruções}, para simplificar a codificação do pojeto.
+  \item \textbf{Pseudo Instruções}, para simplificar a codificação do projeto.
   \item \textbf{Tratamento de Exceções}, para gerar uma peça aleatória e para finilizar a simulação.
   % \item \textbf{Aseprite}, software open source de pixel-art para auxiliar desenho da interface gráfica.
   % \item \textbf{}, .
@@ -111,11 +111,11 @@ Para este projeto foram utilizados os seguintes recursos presentes no MARS:
 
 \section{Metodologia}
 
-Primeiramente foi desenvolvido uma série de macros relacionados a interface gráfica para simplificar o desenho da interface bem como das peças na tela e a aritimética para movimentação dos ponteiros.
+Primeiramente foi desenvolvido uma série de macros relacionados a interface gráfica para simplificar o desenho da interface bem como das peças na tela e a aritmética para movimentação dos ponteiros.
 
 Fez-se necessário a implementação de uma outra estrutura de dados além da pilha, uma fila para armazenamento de dados para a movimentação das peças.
 
-Junto aos macros foram utilizados também sobrotinas(funções) mas deixar o código mais claro. As subrotinas possuem uma nomeclatura mais direta a cerca do que é feito no código, e esta por sua vez chama os macros necessários para sua execução.
+Junto aos macros foram utilizados também sobrotinas(funções) mas deixar o código mais claro. As subrotinas possuem uma nomenclatura mais direta a cerca do que é feito no código, e esta por sua vez chama os macros necessários para sua execução.
 
 A interface possui um tamanho de 512x512 pixels. Para simplificar o desenho e a movimentação do ponteiro foi convencionado uma divisão da tela de 32x32 blocos com 16x16 pixels cada.
 
@@ -143,7 +143,7 @@ O jogo pussui na sua interface(Figura \ref{BaseInterface}) o espaço para o jogo
   \end{center}
 \end{figure}
 
-As peças podem se mover livrimente para esquerda, direita, baixo, e girar dentro do espaço da tela, desde que haja espaço livre.
+As peças podem se mover livremente para esquerda, direita, baixo, e girar dentro do espaço da tela, desde que haja espaço livre.
 De tempo em tempo a peça descerá automaticamente, caso não seja possível descer a peça será fixada na tela, linhas completas serão removidas, a pontuação e contador de linhas atualizadas e uma nova peça lançada na tela(Figura \ref{InGame}).
 
 \begin{figure}[H]
@@ -154,7 +154,7 @@ De tempo em tempo a peça descerá automaticamente, caso não seja possível des
   \end{center}
 \end{figure}
 
-Caso uma nova peça não possa ser lançada em jogo, a menssagem de \textit{Game Over} aparecera juntamente ao Menu(Figura \ref{GameOver}).
+Caso uma nova peça não possa ser lançada em jogo, a mensagem de \textit{Game Over} aparecera juntamente ao Menu(Figura \ref{GameOver}).
 
 Para jogar o jogo é necessário iniciar MARS carregar o arquivo nomeado \textbf{Main.asm}. Abrir a ferramenta \textit{Keyboard and Display MMIO Simulator}. Abrir a ferramenta \textit{Bitmap Display}, configurar para 512x512 com pixels 1x1, ou, 1024x1024 com pixels 2x2, selecionar endereço base para $\$gp$. Montar o código, conectar as ferramentas ao MARS e lançar a execução em velocidade máxima.
 
